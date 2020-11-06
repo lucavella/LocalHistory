@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">LocalHistory</string>
+    <string name="app_name">Local History</string>
     <string name="title_activity_maps">Map</string>
+    <string name="location_permission_declined">Location permission denied</string>
+    <string name="location_permission_granted">Location permission granted</string>
+    <string name="location_permission_never">Enable location in app settings</string>
 </resources>
