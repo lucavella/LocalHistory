@@ -9,8 +9,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,6 +24,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.security.Provider;
+
 import be.ucll.localhistory.PermissionUtils.PermissionStatus;
 
 public class MapsActivity extends AppCompatActivity
@@ -30,6 +34,7 @@ public class MapsActivity extends AppCompatActivity
         ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static boolean MAP_FOLLOW_ME = true;
 
     private GoogleMap mMap;
     private LocationManager locationManager;
@@ -40,18 +45,41 @@ public class MapsActivity extends AppCompatActivity
         setContentView(R.layout.activity_maps);
 
         // get SupportMapFragment and execute onMapReady when the map is ready to be used.
+        // supportMapFragment is not for production
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
-    // TODO: better program flow to make things more clear and to reduce redundancy
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_map, menu);
+        return true;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        enableLocation(false);
+        createMyLocationButtonListener();
+        createMyLocationChangedListener();
+
+        if (locationManager == null) {
+            LatLng genk = new LatLng(50.96667, 5.5);
+            mMap.addMarker(new MarkerOptions().position(genk).title("Marker in Genk"));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(genk, 16.0f));
+        }
+    }
+
     @SuppressLint("MissingPermission")
     private void enableLocation(boolean overrideRationale) {
         if (PermissionUtils.getPermissionStatus(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PermissionStatus.GRANTED) {
-            if ((mMap != null) || (locationManager == null)) {
-                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (locationManager == null) locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMapToolbarEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -63,34 +91,19 @@ public class MapsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        enableLocation(false);
-        createMyLocationButtonListener();
-
-        if (locationManager == null) {
-            LatLng genk = new LatLng(50.96667, 5.5);
-            mMap.addMarker(new MarkerOptions().position(genk).title("Marker in Genk"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(genk, 16.0f));
-        }
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             switch (PermissionUtils.getPermissionStatus(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 case GRANTED:
                     Toast.makeText(this, R.string.location_permission_granted, Toast.LENGTH_SHORT).show();
                     enableLocation(false);
-                    // TODO: doesn't work because last location is not yet available immediately after enabling location
                     jumpToMyLocation();
                     break;
                 case DENIED:
                     Toast.makeText(this, R.string.location_permission_declined, Toast.LENGTH_SHORT).show();
                     break;
                 case DONT_ASK_OR_NEVER_ASKED:
-                    // never asked again in this case
+                    // never asked in this case
                     Toast.makeText(this, R.string.location_permission_never, Toast.LENGTH_SHORT).show();
                     break;
                 default:
@@ -107,16 +120,17 @@ public class MapsActivity extends AppCompatActivity
     @SuppressLint("MissingPermission")
     private void jumpToMyLocation() {
         if (locationManager != null) {
-            Criteria criteria = new Criteria();
-            Location myLocation = locationManager.getLastKnownLocation(
-                    locationManager.getBestProvider(criteria, false));
+            String bestProvider = locationManager.getBestProvider(new Criteria(), false);
+            if (bestProvider == null) return;
+            Location myLocation = locationManager.getLastKnownLocation(bestProvider);
+            if (myLocation == null) return;
             jumpToLocation(myLocation, 16.0f);
         } else {
             enableLocation(false);
         }
     }
 
-    private void createMyLocationButtonListener(){
+    private void createMyLocationButtonListener() {
         FloatingActionButton myLocationButton = findViewById(R.id.myLocationButton);
         myLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,5 +143,22 @@ public class MapsActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void createMyLocationChangedListener() {
+        String bestProvider = locationManager.getBestProvider(new Criteria(), false);
+        if (bestProvider == null) return;
+        locationManager.requestLocationUpdates(bestProvider, 100, 1, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(@NonNull Location location) {
+                        if ((MAP_FOLLOW_ME) && (PermissionUtils.getPermissionStatus(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                                == PermissionStatus.GRANTED)) {
+                            jumpToMyLocation();
+                        }
+                    }
+                }
+
+        );
     }
 }

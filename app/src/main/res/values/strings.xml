@@ -4,4 +4,6 @@
     <string name="location_permission_declined">Location permission denied</string>
     <string name="location_permission_granted">Location permission granted</string>
     <string name="location_permission_never">Enable location in app settings</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_settings">Settings</string>
 </resources>
