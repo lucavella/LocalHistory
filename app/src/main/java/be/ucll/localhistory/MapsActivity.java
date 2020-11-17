@@ -20,6 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -40,6 +41,7 @@ public class MapsActivity extends AppCompatActivity
     private LocationManager locationManager;
 
     @Override
+    @SuppressWarnings("ConstantConditions")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -65,6 +67,7 @@ public class MapsActivity extends AppCompatActivity
         enableLocation(false);
         createMyLocationButtonListener();
         createMyLocationChangedListener();
+        createMoveCameraStopFollowMeListener();
 
         if (locationManager == null) {
             LatLng genk = new LatLng(50.96667, 5.5);
@@ -112,9 +115,16 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-    private void jumpToLocation(Location location, float zoom) {
+    private void jumpToLocation(Location location, float zoom, boolean animated) {
         LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, zoom));
+        if (!animated) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, zoom));
+        } else {
+            CameraPosition.Builder positionBuilder = new CameraPosition.Builder();
+            positionBuilder.target(latlng);
+            positionBuilder.zoom(zoom);
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(positionBuilder.build()));
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -124,7 +134,8 @@ public class MapsActivity extends AppCompatActivity
             if (bestProvider == null) return;
             Location myLocation = locationManager.getLastKnownLocation(bestProvider);
             if (myLocation == null) return;
-            jumpToLocation(myLocation, 16.0f);
+            MAP_FOLLOW_ME = true;
+            jumpToLocation(myLocation, 16.0f, true);
         } else {
             enableLocation(false);
         }
@@ -149,7 +160,7 @@ public class MapsActivity extends AppCompatActivity
     private void createMyLocationChangedListener() {
         String bestProvider = locationManager.getBestProvider(new Criteria(), false);
         if (bestProvider == null) return;
-        locationManager.requestLocationUpdates(bestProvider, 100, 1, new LocationListener() {
+        locationManager.requestLocationUpdates(bestProvider, 50, 1, new LocationListener() {
                     @Override
                     public void onLocationChanged(@NonNull Location location) {
                         if ((MAP_FOLLOW_ME) && (PermissionUtils.getPermissionStatus(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -160,5 +171,14 @@ public class MapsActivity extends AppCompatActivity
                 }
 
         );
+    }
+
+    private void createMoveCameraStopFollowMeListener() {
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int reason) {
+                if (reason == REASON_GESTURE) MAP_FOLLOW_ME = false;
+            }
+        });
     }
 }
