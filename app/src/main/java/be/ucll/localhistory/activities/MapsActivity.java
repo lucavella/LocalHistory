@@ -2,14 +2,18 @@ package be.ucll.localhistory.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.SearchManager;
 import android.content.Context;
+import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.Random;
 
 import be.ucll.localhistory.R;
+import be.ucll.localhistory.helpers.LocationSearchSuggestionsAdapter;
 import be.ucll.localhistory.helpers.PermissionUtils;
 import be.ucll.localhistory.helpers.PermissionUtils.PermissionStatus;
 import be.ucll.localhistory.models.LocationDb;
@@ -67,6 +72,58 @@ public class MapsActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.activity_maps_menu, menu);
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.location_search).getActionView();
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        final LocationSearchSuggestionsAdapter suggestionsAdapter = new LocationSearchSuggestionsAdapter(
+                this,
+                R.layout.location_search_suggestion_item
+        );
+
+        final SearchView searchView =
+                (SearchView) menu.findItem(R.id.location_search).getActionView();
+        searchView.setSuggestionsAdapter(suggestionsAdapter);
+        searchView.setIconifiedByDefault(false);
+
+        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
+                String selectedTxt = selectedCursor.getString(selectedCursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
+                searchView.setQuery(selectedTxt, true);
+                return true;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                return true;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                suggestionsAdapter.UpdateAdapterCursorByQuery(newText);
+                return false;
+            }
+        });
 
         return true;
     }

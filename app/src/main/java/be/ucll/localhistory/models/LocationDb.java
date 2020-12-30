@@ -3,14 +3,23 @@ package be.ucll.localhistory.models;
 import com.google.android.gms.maps.model.LatLng;
 
 public class LocationDb {
-    private LatLng position;
+    private LatLngDb position;
     private String name, description, city, country;
 
     public LocationDb() {
     }
 
-    public LocationDb(LatLng position, String name, String description, String city, String country) {
+    public LocationDb(LatLngDb position, String name, String description, String city, String country) {
         this.position = position;
+        this.name = name;
+        this.description = description;
+        this.city = city;
+        this.country = country;
+    }
+
+    public LocationDb(LatLng position, String name, String description, String city, String country) {
+        this.position = new LatLngDb();
+        this.position.fromLatLng(position);
         this.name = name;
         this.description = description;
         this.city = city;
@@ -33,11 +42,11 @@ public class LocationDb {
         this.country = country;
     }
 
-    public LatLng getPosition() {
+    public LatLngDb getPosition() {
         return this.position;
     }
 
-    public void setPosition(LatLng position) {
+    public void setPosition(LatLngDb position) {
         this.position = position;
     }
 
