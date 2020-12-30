@@ -1,4 +1,4 @@
-package be.ucll.localhistory;
+package be.ucll.localhistory.helpers;
 
 import android.content.pm.PackageManager;
 

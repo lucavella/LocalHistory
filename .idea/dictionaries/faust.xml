@@ -2,6 +2,8 @@
   <dictionary name="faust">
     <words>
       <w>genk</w>
+      <w>localhistory</w>
+      <w>ucll</w>
     </words>
   </dictionary>
 </component>

@@ -1,8 +1,4 @@
-package be.ucll.localhistory;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+package be.ucll.localhistory.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -16,6 +12,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,10 +24,16 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-import java.security.Provider;
+import java.util.Random;
 
-import be.ucll.localhistory.PermissionUtils.PermissionStatus;
+import be.ucll.localhistory.R;
+import be.ucll.localhistory.helpers.PermissionUtils;
+import be.ucll.localhistory.helpers.PermissionUtils.PermissionStatus;
+import be.ucll.localhistory.models.LocationDb;
+
 
 public class MapsActivity extends AppCompatActivity
         implements
@@ -39,6 +45,10 @@ public class MapsActivity extends AppCompatActivity
 
     private GoogleMap mMap;
     private LocationManager locationManager;
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference locationRef = database.getReference("locations");
+
 
     @Override
     @SuppressWarnings("ConstantConditions")
@@ -55,7 +65,9 @@ public class MapsActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_map, menu);
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.activity_maps_menu, menu);
+
         return true;
     }
 
@@ -68,6 +80,7 @@ public class MapsActivity extends AppCompatActivity
         createMyLocationButtonListener();
         createMyLocationChangedListener();
         createMoveCameraStopFollowMeListener();
+        createLongPressListener();
 
         if (locationManager == null) {
             LatLng genk = new LatLng(50.96667, 5.5);
@@ -178,6 +191,29 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public void onCameraMoveStarted(int reason) {
                 if (reason == REASON_GESTURE) MAP_FOLLOW_ME = false;
+            }
+        });
+    }
+
+    public static String random() {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = 5 + generator.nextInt(10);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++){
+            tempChar = (char) (generator.nextInt(30) + 97);
+            if ((int) tempChar > 97 + 26) tempChar = ' ';
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
+    }
+
+    private void createLongPressListener() {
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                LocationDb loc = new LocationDb(latLng, random(), random(), random(), random());
+                locationRef.push().setValue(loc);
             }
         });
     }
