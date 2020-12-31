@@ -9,4 +9,6 @@
     <string name="search_hint">Search location</string>
     <string name="location_not_found">Location not found</string>
     <string name="error">An error occurred</string>
+    <string name="title_activity_location_search_results">Location results</string>
+    <string name="no_results">No results</string>
 </resources>

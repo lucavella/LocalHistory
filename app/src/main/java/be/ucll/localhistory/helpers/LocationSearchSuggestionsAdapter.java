@@ -69,7 +69,7 @@ public class LocationSearchSuggestionsAdapter extends SimpleCursorAdapter {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("error", databaseError.getMessage());
+                        Log.e("error", databaseError.getMessage());
                     }
                 });
     }

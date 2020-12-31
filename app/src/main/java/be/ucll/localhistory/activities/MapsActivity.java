@@ -154,7 +154,7 @@ public class MapsActivity extends AppCompatActivity
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         Toast.makeText(MapsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
-                        Log.d("error", databaseError.getMessage());
+                        Log.e("error", databaseError.getMessage());
                     }
                 });
     }
