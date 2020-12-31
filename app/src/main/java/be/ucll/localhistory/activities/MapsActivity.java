@@ -141,9 +141,9 @@ public class MapsActivity extends AppCompatActivity
                         int id = 0;
                         LocationDb loc = dataSnapshot.getValue(LocationDb.class);
                         if (loc != null) {
-                            Log.d("error", loc.getName());
                             LatLng pos = loc.getPosition().ToLatLng();
                             MAP_FOLLOW_ME = false;
+                            setMarker(pos);
                             jumpToLocation(pos, 16.0f, true);
                             Toast.makeText(MapsActivity.this, loc.getName(), Toast.LENGTH_SHORT).show();
                         } else {
@@ -214,6 +214,14 @@ public class MapsActivity extends AppCompatActivity
                     break;
             }
         }
+    }
+
+    private void setMarker(LatLng location) {
+        mMap.clear();
+
+        MarkerOptions marker = new MarkerOptions()
+                .position(location);
+        mMap.addMarker(marker);
     }
 
     private void jumpToLocation(LatLng location, float zoom, boolean animated) {
