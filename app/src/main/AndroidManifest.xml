@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -29,7 +30,7 @@
                 android:value=".activities.LocationSearchableActivity" />
         </activity>
         <activity android:name=".activities.LocationSearchableActivity"
-                  android:launchMode="singleTop">
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>

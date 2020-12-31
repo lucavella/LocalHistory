@@ -28,8 +28,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Random;
 
@@ -100,14 +103,16 @@ public class MapsActivity extends AppCompatActivity
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
             public boolean onSuggestionSelect(int position) {
-                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
-                String selectedTxt = selectedCursor.getString(selectedCursor.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
-                searchView.setQuery(selectedTxt, true);
                 return true;
             }
 
             @Override
             public boolean onSuggestionClick(int position) {
+                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
+                searchView.clearFocus();
+                int dbIdColPos = selectedCursor.getColumnIndex("db_id");
+                String dbId = selectedCursor.getString(dbIdColPos);
+                showLocation(dbId);
                 return true;
             }
         });
@@ -126,6 +131,32 @@ public class MapsActivity extends AppCompatActivity
         });
 
         return true;
+    }
+
+    private void showLocation(final String dbId) {
+        locationRef.child(dbId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        int id = 0;
+                        LocationDb loc = dataSnapshot.getValue(LocationDb.class);
+                        if (loc != null) {
+                            Log.d("error", loc.getName());
+                            LatLng pos = loc.getPosition().ToLatLng();
+                            MAP_FOLLOW_ME = false;
+                            jumpToLocation(pos, 16.0f, true);
+                            Toast.makeText(MapsActivity.this, loc.getName(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MapsActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(MapsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                        Log.d("error", databaseError.getMessage());
+                    }
+                });
     }
 
     @Override
@@ -185,13 +216,12 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-    private void jumpToLocation(Location location, float zoom, boolean animated) {
-        LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
+    private void jumpToLocation(LatLng location, float zoom, boolean animated) {
         if (!animated) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, zoom));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, zoom));
         } else {
             CameraPosition.Builder positionBuilder = new CameraPosition.Builder();
-            positionBuilder.target(latlng);
+            positionBuilder.target(location);
             positionBuilder.zoom(zoom);
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(positionBuilder.build()));
         }
@@ -205,7 +235,8 @@ public class MapsActivity extends AppCompatActivity
             Location myLocation = locationManager.getLastKnownLocation(bestProvider);
             if (myLocation == null) return;
             MAP_FOLLOW_ME = true;
-            jumpToLocation(myLocation, 16.0f, true);
+            LatLng latlng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+            jumpToLocation(latlng, 16.0f, true);
         } else {
             enableLocation(false);
         }

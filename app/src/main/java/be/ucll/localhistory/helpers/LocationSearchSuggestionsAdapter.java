@@ -1,9 +1,7 @@
 package be.ucll.localhistory.helpers;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.database.MatrixCursor;
-import android.provider.BaseColumns;
 import android.util.Log;
 import android.widget.SimpleCursorAdapter;
 
@@ -25,9 +23,10 @@ public class LocationSearchSuggestionsAdapter extends SimpleCursorAdapter {
 
     private static final String[] mVisible =
             {
-                    SearchManager.SUGGEST_COLUMN_TEXT_1,
-                    SearchManager.SUGGEST_COLUMN_TEXT_2,
-                    BaseColumns._ID
+                    "name",
+                    "place",
+                    "_id",
+                    "db_id"
             };
     private static final int[] mViewIds =
             {
@@ -57,10 +56,12 @@ public class LocationSearchSuggestionsAdapter extends SimpleCursorAdapter {
                         int id = 0;
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             LocationDb loc = ds.getValue(LocationDb.class);
+                            String db_id = ds.getKey();
                             suggestionsCursor.newRow()
                                     .add(loc.getName())
                                     .add(String.format("%s, %s", loc.getCity(), loc.getCountry()))
-                                    .add(id++);
+                                    .add(id++)
+                                    .add(db_id);
                         }
 
                         LocationSearchSuggestionsAdapter.super.changeCursor(suggestionsCursor);
