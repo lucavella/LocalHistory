@@ -7,6 +7,19 @@
     android:background="@color/defaultBackground"
     tools:context=".activities.LocationSearchableActivity">
 
+    <TextView
+        android:id="@+id/no_result_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/no_results"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ListView
         android:id="@+id/location_search_results_listview"
         android:layout_width="0dp"

@@ -3,8 +3,8 @@ package be.ucll.localhistory.activities;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +16,10 @@ public class LocationSearchableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_search_results);
+
+        ListView resultsListView = findViewById(R.id.location_search_results_listview);
+        TextView emptyView = findViewById(R.id.no_result_textview);
+        resultsListView.setEmptyView(emptyView);
 
         handleIntent(getIntent());
     }
