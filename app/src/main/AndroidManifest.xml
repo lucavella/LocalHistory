@@ -12,31 +12,40 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-<!--        <provider android:name="be.ucll.localhistory.helpers.LocationSuggestionProvider"-->
-<!--            android:authorities="be.ucll.localhistory" />-->
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".activities.MapsActivity"
-                  android:label="@string/title_activity_maps">
+        <activity
+            android:name=".activities.MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="android.app.default_searchable"
-                android:value=".activities.LocationSearchableActivity" />
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".activities.MapsActivity" />
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".activities.LocationSearchableActivity"
-            android:launchMode="singleTop"
-            android:label="@string/title_activity_location_search_results">
+        <activity
+            android:name=".activities.LocationSearchableActivity"
+            android:label="@string/title_activity_location_search_results"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
     </application>
 

@@ -2,7 +2,12 @@ package be.ucll.localhistory.activities;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -43,9 +48,34 @@ public class LocationSearchableActivity extends AppCompatActivity {
 
                 ListView resultsListView = findViewById(R.id.location_search_results_listview);
                 resultsListView.setAdapter(resultsAdapter);
+                createListViewOnClickListener();
             }
-
-
         }
+    }
+
+    private void createListViewOnClickListener() {
+        final ListView resultsListView = findViewById(R.id.location_search_results_listview);
+
+        resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ListAdapter adapter = resultsListView.getAdapter();
+                Cursor selectedCursor = (Cursor)adapter.getItem(position);
+                int dbIdColPos = selectedCursor.getColumnIndex("db_id");
+
+                String dbId = selectedCursor.getString(dbIdColPos);
+                Uri dbIdUri = new Uri.Builder()
+                        .appendPath(getString(R.string.db_location_txt))
+                        .appendPath(dbId)
+                        .build();
+
+                Intent showLocationIntent = new Intent()
+                        .setAction(Intent.ACTION_VIEW)
+                        .setData(dbIdUri);
+
+                setResult(RESULT_OK, showLocationIntent);
+                finish();
+            }
+        });
     }
 }

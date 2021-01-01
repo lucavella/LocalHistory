@@ -4,11 +4,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +19,7 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -34,6 +37,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.List;
 import java.util.Random;
 
 import be.ucll.localhistory.R;
@@ -108,11 +112,11 @@ public class MapsActivity extends AppCompatActivity
 
             @Override
             public boolean onSuggestionClick(int position) {
-                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
                 searchView.clearFocus();
+                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
                 int dbIdColPos = selectedCursor.getColumnIndex("db_id");
                 String dbId = selectedCursor.getString(dbIdColPos);
-                showLocation(dbId);
+                showLocationById(dbId);
                 return true;
             }
         });
@@ -133,7 +137,38 @@ public class MapsActivity extends AppCompatActivity
         return true;
     }
 
-    private void showLocation(final String dbId) {
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            final Intent searchIntent = new Intent(getApplicationContext(),
+                    LocationSearchableActivity.class)
+                    .setAction(Intent.ACTION_SEARCH)
+                    .putExtra(SearchManager.QUERY, query);
+            startActivityForResult(searchIntent, 1);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (Intent.ACTION_VIEW.equals(data.getAction())) {
+                Uri intentData = data.getData();
+                List<String> intentDataPath = intentData.getPathSegments();
+                if ((intentDataPath.size() == 2) &&
+                        (getString(R.string.db_location_txt).equals(intentDataPath.get(0)))) {
+                    String dbId = intentDataPath.get(1);
+                    showLocationById(dbId);
+                }
+            }
+        }
+    }
+
+    private void showLocationById(final String dbId) {
         locationRef.child(dbId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
