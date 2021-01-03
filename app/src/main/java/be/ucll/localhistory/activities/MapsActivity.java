@@ -126,6 +126,8 @@ public class MapsActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+
                 final Intent searchIntent = new Intent(getApplicationContext(),
                         LocationSearchableActivity.class)
                         .setAction(Intent.ACTION_SEARCH)
