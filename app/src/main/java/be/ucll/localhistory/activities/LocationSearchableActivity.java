@@ -72,7 +72,7 @@ public class LocationSearchableActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.length() > 2) {
+                if (newText.length() >= 2) {
                     final LocationSearchAdapter resultsAdapter = (LocationSearchAdapter) resultsListView.getAdapter();
                     resultsAdapter.UpdateAdapterCursorByQuery(newText);
                 }
