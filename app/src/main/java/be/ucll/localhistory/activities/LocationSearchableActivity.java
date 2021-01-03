@@ -70,6 +70,11 @@ public class LocationSearchableActivity extends AppCompatActivity {
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
 
+        String query = getIntent().getStringExtra(SearchManager.QUERY);
+        if (query != null) {
+            searchView.setQuery(query, false);
+        }
+
         searchMenuItem.getIcon().setTint(Color.WHITE);
         searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
