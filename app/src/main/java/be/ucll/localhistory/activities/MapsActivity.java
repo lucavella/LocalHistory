@@ -27,8 +27,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
@@ -176,11 +178,11 @@ public class MapsActivity extends AppCompatActivity
                         int id = 0;
                         LocationDb loc = dataSnapshot.getValue(LocationDb.class);
                         if (loc != null) {
-                            LatLng pos = loc.getPosition().ToLatLng();
                             MAP_FOLLOW_ME = false;
-                            setMarker(pos);
+
+                            LatLng pos = loc.getPosition().ToLatLng();
+                            addMarker(pos, loc.getName(), 240f, loc);
                             jumpToLocation(pos, 16.0f, true);
-                            Toast.makeText(MapsActivity.this, loc.getName(), Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MapsActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
                         }
@@ -204,6 +206,7 @@ public class MapsActivity extends AppCompatActivity
         createMyLocationChangedListener();
         createMoveCameraStopFollowMeListener();
         createLongPressListener();
+        createMarkerPressListener();
     }
 
     @SuppressLint("MissingPermission")
@@ -245,13 +248,17 @@ public class MapsActivity extends AppCompatActivity
         }
     }
 
-    private void setMarker(LatLng location) {
+    private void addMarker(LatLng location, String title, float hue, Object data) {
         mMap.clear();
 
-        MarkerOptions marker = new MarkerOptions()
-                .position(location);
-        mMap.addMarker(marker)
-                .showInfoWindow();
+        MarkerOptions markerOpt = new MarkerOptions()
+                .position(location)
+                .title(title)
+                .icon(BitmapDescriptorFactory.defaultMarker(hue));
+
+        Marker marker = mMap.addMarker(markerOpt);
+        marker.setTag(data);
+        marker.showInfoWindow();
     }
 
     private void jumpToLocation(LatLng location, float zoom, boolean animated) {
@@ -338,8 +345,26 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
             public void onMapLongClick(LatLng latLng) {
-                LocationDb loc = new LocationDb(latLng, random(), random(), random(), random());
-                locationRef.push().setValue(loc);
+                addMarker(latLng, "Add new", 50f, null);
+            }
+        });
+    }
+
+    private void createMarkerPressListener() {
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                LocationDb loc = (LocationDb) marker.getTag();
+                if (loc == null) {
+                    LatLng pos = marker.getPosition();
+                    loc = new LocationDb(pos, random(), random(), random(), random());
+                    locationRef.push().setValue(loc);
+
+                    marker.remove();
+                    addMarker(pos, loc.getName(), 240f, loc);
+                }
+
+                return false;
             }
         });
     }
