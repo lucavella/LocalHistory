@@ -17,7 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.models.LocationDb;
 
-public class LocationSearchSuggestionsAdapter extends SimpleCursorAdapter {
+public class LocationSearchAdapter extends SimpleCursorAdapter {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference locationRef = database.getReference("locations");
 
@@ -35,7 +35,7 @@ public class LocationSearchSuggestionsAdapter extends SimpleCursorAdapter {
             };
 
 
-    public LocationSearchSuggestionsAdapter(Context context, int layout) {
+    public LocationSearchAdapter(Context context, int layout) {
         super(
                 context,
                 layout,
@@ -64,7 +64,7 @@ public class LocationSearchSuggestionsAdapter extends SimpleCursorAdapter {
                                     .add(db_id);
                         }
 
-                        LocationSearchSuggestionsAdapter.super.changeCursor(suggestionsCursor);
+                        LocationSearchAdapter.super.changeCursor(suggestionsCursor);
                     }
 
                     @Override

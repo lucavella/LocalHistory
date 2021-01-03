@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Random;
 
 import be.ucll.localhistory.R;
-import be.ucll.localhistory.helpers.LocationSearchSuggestionsAdapter;
+import be.ucll.localhistory.helpers.LocationSearchAdapter;
 import be.ucll.localhistory.helpers.PermissionUtils;
 import be.ucll.localhistory.helpers.PermissionUtils.PermissionStatus;
 import be.ucll.localhistory.models.LocationDb;
@@ -96,7 +96,7 @@ public class MapsActivity extends AppCompatActivity
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        final LocationSearchSuggestionsAdapter suggestionsAdapter = new LocationSearchSuggestionsAdapter(
+        final LocationSearchAdapter suggestionsAdapter = new LocationSearchAdapter(
                 this,
                 R.layout.location_search_suggestion_item
         );

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import be.ucll.localhistory.R;
-import be.ucll.localhistory.helpers.LocationSearchSuggestionsAdapter;
+import be.ucll.localhistory.helpers.LocationSearchAdapter;
 
 public class LocationSearchableActivity extends AppCompatActivity {
     @Override
@@ -37,7 +37,7 @@ public class LocationSearchableActivity extends AppCompatActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final LocationSearchSuggestionsAdapter resultsAdapter = new LocationSearchSuggestionsAdapter(
+            final LocationSearchAdapter resultsAdapter = new LocationSearchAdapter(
                     this,
                     R.layout.location_search_suggestion_item
             );
