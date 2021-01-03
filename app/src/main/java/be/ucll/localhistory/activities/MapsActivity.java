@@ -126,7 +126,12 @@ public class MapsActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                final Intent searchIntent = new Intent(getApplicationContext(),
+                        LocationSearchableActivity.class)
+                        .setAction(Intent.ACTION_SEARCH)
+                        .putExtra(SearchManager.QUERY, query);
+                startActivityForResult(searchIntent, 1);
+                return true;
             }
 
             @Override
@@ -137,20 +142,6 @@ public class MapsActivity extends AppCompatActivity
         });
 
         return true;
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            final Intent searchIntent = new Intent(getApplicationContext(),
-                    LocationSearchableActivity.class)
-                    .setAction(Intent.ACTION_SEARCH)
-                    .putExtra(SearchManager.QUERY, query);
-            startActivityForResult(searchIntent, 1);
-        }
     }
 
     @Override
