@@ -57,53 +57,26 @@ public class LocationSearchableActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        final LocationSearchAdapter suggestionsAdapter = new LocationSearchAdapter(
-                this,
-                R.layout.location_search_suggestion_item
-        );
-
         final SearchView searchView =
                 (SearchView) menu.findItem(R.id.location_search).getActionView();
-        searchView.setSuggestionsAdapter(suggestionsAdapter);
-        searchView.setIconifiedByDefault(false);
-
-        searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-            @Override
-            public boolean onSuggestionSelect(int position) {
-                return true;
-            }
-
-            @Override
-            public boolean onSuggestionClick(int position) {
-                searchView.clearFocus();
-                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
-                int dbIdColPos = selectedCursor.getColumnIndex("db_id");
-                String dbId = selectedCursor.getString(dbIdColPos);
-
-                Uri dbIdUri = new Uri.Builder()
-                        .appendPath(getString(R.string.db_location_txt))
-                        .appendPath(dbId)
-                        .build();
-
-                Intent showLocationIntent = new Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setData(dbIdUri);
-
-                setResult(RESULT_OK, showLocationIntent);
-                finish();
-                return true;
-            }
-        });
+        final ListView resultsListView =
+                findViewById(R.id.location_search_results_listview);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                searchView.clearFocus();
+
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                suggestionsAdapter.UpdateAdapterCursorByQuery(newText);
+                if (newText.length() > 2) {
+                    final LocationSearchAdapter resultsAdapter = (LocationSearchAdapter) resultsListView.getAdapter();
+                    resultsAdapter.UpdateAdapterCursorByQuery(newText);
+                }
+
                 return false;
             }
         });
@@ -122,7 +95,8 @@ public class LocationSearchableActivity extends AppCompatActivity {
             if (query != null) {
                 resultsAdapter.UpdateAdapterCursorByQuery(query);
 
-                ListView resultsListView = findViewById(R.id.location_search_results_listview);
+                final ListView resultsListView =
+                        findViewById(R.id.location_search_results_listview);
                 resultsListView.setAdapter(resultsAdapter);
                 createListViewOnClickListener();
             }
