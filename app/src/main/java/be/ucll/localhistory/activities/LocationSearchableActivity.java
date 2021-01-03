@@ -4,10 +4,14 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -57,14 +61,42 @@ public class LocationSearchableActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
+        final MenuItem searchMenuItem =
+                menu.findItem(R.id.location_search);
         final SearchView searchView =
-                (SearchView) menu.findItem(R.id.location_search).getActionView();
+                (SearchView)searchMenuItem.getActionView();
         final ListView resultsListView =
                 findViewById(R.id.location_search_results_listview);
+        searchView.setIconifiedByDefault(false);
+        searchView.setFocusable(true);
+
+        searchMenuItem.getIcon().setTint(Color.WHITE);
+        searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchView.requestFocus();
+                        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (inputManager != null) {
+                            inputManager.showSoftInput(searchView.findFocus(), 0);
+                        }
+                    }
+                });
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                return true;
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                searchMenuItem.collapseActionView();
                 searchView.clearFocus();
 
                 return true;

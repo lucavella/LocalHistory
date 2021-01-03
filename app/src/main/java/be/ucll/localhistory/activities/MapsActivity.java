@@ -6,15 +6,19 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -101,10 +105,36 @@ public class MapsActivity extends AppCompatActivity
                 R.layout.location_search_suggestion_item
         );
 
+        final MenuItem searchMenuItem =
+                menu.findItem(R.id.location_search);
         final SearchView searchView =
-                (SearchView) menu.findItem(R.id.location_search).getActionView();
+                (SearchView) searchMenuItem.getActionView();
         searchView.setSuggestionsAdapter(suggestionsAdapter);
         searchView.setIconifiedByDefault(false);
+        searchView.setFocusable(true);
+
+        searchMenuItem.getIcon().setTint(Color.WHITE);
+        searchMenuItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchView.requestFocus();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        if (imm != null) { // it's never null. I've added this line just to make the compiler happy
+                            imm.showSoftInput(searchView.findFocus(), 0);
+                        }
+                    }
+                });
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                return true;
+            }
+        });
 
         searchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
             @Override
@@ -114,25 +144,28 @@ public class MapsActivity extends AppCompatActivity
 
             @Override
             public boolean onSuggestionClick(int position) {
-                searchView.clearFocus();
+                searchMenuItem.collapseActionView();
+
                 Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
                 int dbIdColPos = selectedCursor.getColumnIndex("db_id");
                 String dbId = selectedCursor.getString(dbIdColPos);
                 showLocationById(dbId);
-                return true;
+
+                return false;
             }
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchView.clearFocus();
+                searchMenuItem.collapseActionView();
 
                 final Intent searchIntent = new Intent(getApplicationContext(),
                         LocationSearchableActivity.class)
                         .setAction(Intent.ACTION_SEARCH)
                         .putExtra(SearchManager.QUERY, query);
                 startActivityForResult(searchIntent, 1);
+
                 return true;
             }
 
