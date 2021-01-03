@@ -204,12 +204,6 @@ public class MapsActivity extends AppCompatActivity
         createMyLocationChangedListener();
         createMoveCameraStopFollowMeListener();
         createLongPressListener();
-
-        if (locationManager == null) {
-            LatLng genk = new LatLng(50.96667, 5.5);
-            mMap.addMarker(new MarkerOptions().position(genk).title("Marker in Genk"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(genk, 16.0f));
-        }
     }
 
     @SuppressLint("MissingPermission")
@@ -256,7 +250,8 @@ public class MapsActivity extends AppCompatActivity
 
         MarkerOptions marker = new MarkerOptions()
                 .position(location);
-        mMap.addMarker(marker);
+        mMap.addMarker(marker)
+                .showInfoWindow();
     }
 
     private void jumpToLocation(LatLng location, float zoom, boolean animated) {
