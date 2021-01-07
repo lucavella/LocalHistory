@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -43,7 +45,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import be.ucll.localhistory.R;
@@ -383,14 +387,42 @@ public class MapsActivity extends AppCompatActivity
                 LocationDb loc = (LocationDb) marker.getTag();
                 if (loc == null) {
                     LatLng pos = marker.getPosition();
-                    loc = new LocationDb(pos, random(), random(), random(), random());
-                    locationRef.push().setValue(loc);
+
+                    try {
+                        Geocoder geocoder = new Geocoder(MapsActivity.this, Locale.ENGLISH);
+                        List<Address> addresses = geocoder.getFromLocation(pos.latitude, pos.longitude, 1); //null or empty on no match
+                        if (addresses.size() > 0) {
+                            Address address = addresses.get(0);
+
+                            if (address != null) {
+                                String country = address.getCountryName();
+                                String city = address.getLocality();
+
+                                if ((country != null) && (city != null)) {
+                                    loc = new LocationDb(pos, random(), random(), city, country);
+                                    locationRef.push().setValue(loc);
+
+                                    marker.remove();
+                                    addMarker(pos, loc.getName(), 240f, loc);
+
+                                    MAP_FOLLOW_ME = false;
+                                    jumpToLocation(pos, 16.0f, true);
+
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        Log.d("geocoder error", ex.getMessage());
+                    }
 
                     marker.remove();
-                    addMarker(pos, loc.getName(), 240f, loc);
+                    Toast.makeText(MapsActivity.this, R.string.location_add_failed, Toast.LENGTH_SHORT).show();
                 }
 
-                return false;
+                return true;
             }
         });
     }
