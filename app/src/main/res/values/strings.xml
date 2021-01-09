@@ -20,5 +20,6 @@
     <string name="location_txt">location</string>
     <string name="location_upsert_done">Done</string>
     <string name="location_upsert_incomplete">Not all fields filled in</string>
-    <string name="location_upsert_description_hint">Description, history, trivia, ...</string>
+    <string name="location_upsert_description_hint">Description, history, trivia, &#8230;</string>
+    <string name="location_upsert_place_hint">City, country</string>
 </resources>
