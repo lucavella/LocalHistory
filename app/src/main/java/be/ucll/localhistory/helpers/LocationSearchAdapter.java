@@ -1,6 +1,7 @@
 package be.ucll.localhistory.helpers;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.util.Log;
 import android.widget.SimpleCursorAdapter;
@@ -26,7 +27,7 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
                     "name",
                     "place",
                     "_id",
-                    "db_id"
+                    "db_key"
             };
     private static final int[] mViewIds =
             {
@@ -56,12 +57,11 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
                         int id = 0;
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             LocationDb loc = ds.getValue(LocationDb.class);
-                            String db_id = ds.getKey();
                             suggestionsCursor.newRow()
                                     .add(loc.getName())
                                     .add(String.format("%s, %s", loc.getCity(), loc.getCountry()))
                                     .add(id++)
-                                    .add(db_id);
+                                    .add(ds.getKey());
                         }
 
                         LocationSearchAdapter.super.changeCursor(suggestionsCursor);
@@ -72,5 +72,11 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
                         Log.e("error", databaseError.getMessage());
                     }
                 });
+    }
+
+    public String getLocationKeyAtPosition(int position) {
+        Cursor selectedCursor = (Cursor) getItem(position);
+        int dbKeyColPos = selectedCursor.getColumnIndex("db_key");
+        return selectedCursor.getString(dbKeyColPos);
     }
 }

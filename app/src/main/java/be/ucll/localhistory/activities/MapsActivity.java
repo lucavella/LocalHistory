@@ -149,10 +149,8 @@ public class MapsActivity extends AppCompatActivity
             public boolean onSuggestionClick(int position) {
                 searchMenuItem.collapseActionView();
 
-                Cursor selectedCursor = (Cursor) suggestionsAdapter.getItem(position);
-                int dbIdColPos = selectedCursor.getColumnIndex("db_id");
-                String dbId = selectedCursor.getString(dbIdColPos);
-                showLocationById(dbId);
+                String locationId = suggestionsAdapter.getLocationKeyAtPosition(position);
+                showLocationByKey(locationId);
 
                 return false;
             }
@@ -192,15 +190,15 @@ public class MapsActivity extends AppCompatActivity
                 List<String> intentDataPath = intentData.getPathSegments();
                 if ((intentDataPath.size() == 2) &&
                         (getString(R.string.db_location_txt).equals(intentDataPath.get(0)))) {
-                    String dbId = intentDataPath.get(1);
-                    showLocationById(dbId);
+                    String dbKey = intentDataPath.get(1);
+                    showLocationByKey(dbKey);
                 }
             }
         }
     }
 
-    private void showLocationById(final String dbId) {
-        locationRef.child(dbId)
+    private void showLocationByKey(final String dbKey) {
+        locationRef.child(dbKey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

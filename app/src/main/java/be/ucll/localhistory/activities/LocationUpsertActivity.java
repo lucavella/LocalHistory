@@ -82,14 +82,14 @@ public class LocationUpsertActivity extends AppCompatActivity {
                             DatabaseReference newLocationSnap = locationRef.push();
                             newLocationSnap.setValue(location);
 
-                            Uri dbIdUri = new Uri.Builder()
+                            Uri dbKeyUri = new Uri.Builder()
                                     .appendPath(getString(R.string.db_location_txt))
                                     .appendPath(newLocationSnap.getKey())
                                     .build();
 
                             Intent showLocationIntent = new Intent()
                                     .setAction(Intent.ACTION_VIEW)
-                                    .setData(dbIdUri);
+                                    .setData(dbKeyUri);
 
                             setResult(RESULT_OK, showLocationIntent);
                             finish();

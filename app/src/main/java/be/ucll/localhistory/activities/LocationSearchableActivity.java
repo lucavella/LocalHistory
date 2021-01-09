@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -146,19 +145,17 @@ public class LocationSearchableActivity extends AppCompatActivity {
         resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ListAdapter adapter = resultsListView.getAdapter();
-                Cursor selectedCursor = (Cursor)adapter.getItem(position);
-                int dbIdColPos = selectedCursor.getColumnIndex("db_id");
+                LocationSearchAdapter resultsAdapter = (LocationSearchAdapter)resultsListView.getAdapter();
+                String dbKey = resultsAdapter.getLocationKeyAtPosition(position);
 
-                String dbId = selectedCursor.getString(dbIdColPos);
-                Uri dbIdUri = new Uri.Builder()
+                Uri dbKeyUri = new Uri.Builder()
                         .appendPath(getString(R.string.db_location_txt))
-                        .appendPath(dbId)
+                        .appendPath(dbKey)
                         .build();
 
                 Intent showLocationIntent = new Intent()
                         .setAction(Intent.ACTION_VIEW)
-                        .setData(dbIdUri);
+                        .setData(dbKeyUri);
 
                 setResult(RESULT_OK, showLocationIntent);
                 finish();

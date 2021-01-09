@@ -1,12 +1,13 @@
 package be.ucll.localhistory.models;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.database.Exclude;
 
 import java.io.Serializable;
 
 public class LocationDb implements Serializable {
     private LatLngDb position;
-    private String name, description, city, country;
+    private String key, name, description, city, country;
 
     public LocationDb() {
     }
@@ -33,6 +34,15 @@ public class LocationDb implements Serializable {
         this.description = description;
         this.city = city;
         this.country = country;
+    }
+
+    @Exclude
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getCity() {
