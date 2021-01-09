@@ -318,7 +318,7 @@ public class MapsActivity extends AppCompatActivity
     }
 
     private void createMyLocationButtonListener() {
-        FloatingActionButton myLocationButton = findViewById(R.id.myLocationButton);
+        FloatingActionButton myLocationButton = findViewById(R.id.my_location_button);
         myLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
