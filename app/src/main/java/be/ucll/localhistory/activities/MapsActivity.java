@@ -358,19 +358,6 @@ public class MapsActivity extends AppCompatActivity
         });
     }
 
-    public static String random() {
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = 5 + generator.nextInt(10);
-        char tempChar;
-        for (int i = 0; i < randomLength; i++){
-            tempChar = (char) (generator.nextInt(30) + 97);
-            if ((int) tempChar > 97 + 26) tempChar = ' ';
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
-    }
-
     private void createLongPressListener() {
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -385,7 +372,6 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LocationDb loc = (LocationDb) marker.getTag();
-                Log.d("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", (loc != null) ? loc.getName() : "null");
                 if (loc == null) {
                     LatLng pos = marker.getPosition();
 
