@@ -46,7 +46,7 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
         );
     }
 
-    public void UpdateAdapterCursorByQuery(String query) {
+    public void updateAdapterCursorByQuery(String query) {
         final MatrixCursor suggestionsCursor = new MatrixCursor(mVisible);
 
         locationRef.orderByChild("name").startAt(query).endAt(query + "\uf8ff")

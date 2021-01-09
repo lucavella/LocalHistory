@@ -111,7 +111,7 @@ public class LocationSearchableActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() >= 2) {
                     final LocationSearchAdapter resultsAdapter = (LocationSearchAdapter) resultsListView.getAdapter();
-                    resultsAdapter.UpdateAdapterCursorByQuery(newText);
+                    resultsAdapter.updateAdapterCursorByQuery(newText);
                 }
 
                 return false;
@@ -130,7 +130,7 @@ public class LocationSearchableActivity extends AppCompatActivity {
 
             String query = intent.getStringExtra(SearchManager.QUERY);
             if (query != null) {
-                resultsAdapter.UpdateAdapterCursorByQuery(query);
+                resultsAdapter.updateAdapterCursorByQuery(query);
 
                 final ListView resultsListView =
                         findViewById(R.id.location_search_results_listview);

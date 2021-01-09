@@ -48,7 +48,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.helpers.LocationSearchAdapter;
@@ -175,7 +174,7 @@ public class MapsActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                suggestionsAdapter.UpdateAdapterCursorByQuery(newText);
+                suggestionsAdapter.updateAdapterCursorByQuery(newText);
                 return false;
             }
         });
