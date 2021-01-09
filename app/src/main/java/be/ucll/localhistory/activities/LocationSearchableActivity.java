@@ -3,11 +3,10 @@ package be.ucll.localhistory.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,13 +15,27 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.helpers.LocationSearchAdapter;
+import be.ucll.localhistory.models.LocationDb;
 
 public class LocationSearchableActivity extends AppCompatActivity {
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference locationRef = database.getReference("locations");
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,19 +159,31 @@ public class LocationSearchableActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 LocationSearchAdapter resultsAdapter = (LocationSearchAdapter)resultsListView.getAdapter();
-                String dbKey = resultsAdapter.getLocationKeyAtPosition(position);
+                String locationId = resultsAdapter.getLocationKeyAtPosition(position);
 
-                Uri dbKeyUri = new Uri.Builder()
-                        .appendPath(getString(R.string.db_location_txt))
-                        .appendPath(dbKey)
-                        .build();
+                locationRef.child(locationId)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                LocationDb loc = dataSnapshot.getValue(LocationDb.class);
+                                if (loc != null) {
+                                    Intent showLocationIntent = new Intent()
+                                            .setAction(Intent.ACTION_VIEW)
+                                            .putExtra(getString(R.string.location_txt), loc);
 
-                Intent showLocationIntent = new Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setData(dbKeyUri);
+                                    setResult(RESULT_OK, showLocationIntent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(LocationSearchableActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
+                                }
+                            }
 
-                setResult(RESULT_OK, showLocationIntent);
-                finish();
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Toast.makeText(LocationSearchableActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                                Log.e("error", databaseError.getMessage());
+                            }
+                        });
             }
         });
     }

@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Criteria;
@@ -13,7 +12,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -150,8 +148,25 @@ public class MapsActivity extends AppCompatActivity
                 searchMenuItem.collapseActionView();
 
                 String locationId = suggestionsAdapter.getLocationKeyAtPosition(position);
-                showLocationByKey(locationId);
 
+                locationRef.child(locationId)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                LocationDb loc = dataSnapshot.getValue(LocationDb.class);
+                                if (loc != null) {
+                                    showLocation(loc);
+                                } else {
+                                    Toast.makeText(MapsActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Toast.makeText(MapsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
+                                Log.e("error", databaseError.getMessage());
+                            }
+                        });
                 return false;
             }
         });
@@ -186,41 +201,21 @@ public class MapsActivity extends AppCompatActivity
 
         if (resultCode == RESULT_OK) {
             if (Intent.ACTION_VIEW.equals(data.getAction())) {
-                Uri intentData = data.getData();
-                List<String> intentDataPath = intentData.getPathSegments();
-                if ((intentDataPath.size() == 2) &&
-                        (getString(R.string.db_location_txt).equals(intentDataPath.get(0)))) {
-                    String dbKey = intentDataPath.get(1);
-                    showLocationByKey(dbKey);
-                }
+                LocationDb location = (LocationDb) data.getSerializableExtra(
+                        getString(R.string.location_txt)
+                );
+
+                showLocation(location);
             }
         }
     }
 
-    private void showLocationByKey(final String dbKey) {
-        locationRef.child(dbKey)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        int id = 0;
-                        LocationDb loc = dataSnapshot.getValue(LocationDb.class);
-                        if (loc != null) {
-                            MAP_FOLLOW_ME = false;
+    private void showLocation(LocationDb location) {
+        MAP_FOLLOW_ME = false;
 
-                            LatLng pos = loc.getPosition().ToLatLng();
-                            addMarker(pos, loc.getName(), 240f, loc);
-                            jumpToLocation(pos, 16.0f, true);
-                        } else {
-                            Toast.makeText(MapsActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(MapsActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
-                        Log.e("error", databaseError.getMessage());
-                    }
-                });
+        LatLng pos = location.getPosition().ToLatLng();
+        addMarker(pos, location.getName(), 240f, location);
+        jumpToLocation(pos, 16.0f, true);
     }
 
     @Override

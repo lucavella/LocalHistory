@@ -1,7 +1,6 @@
 package be.ucll.localhistory.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +29,6 @@ public class LocationUpsertActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_upsert);
-        setTitle(R.string.title_activity_location_insert);
 
         createButtonClickListener();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -46,14 +44,16 @@ public class LocationUpsertActivity extends AppCompatActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_INSERT.equals(intent.getAction())) {
+            setTitle(R.string.title_activity_location_insert);
             locationIsNew = true;
+
             location = (LocationDb)intent.getSerializableExtra(
                     getString(R.string.location_txt)
             );
 
-            EditText placeText = (EditText)findViewById(R.id.location_upsert_place_edit_text);
-
+            EditText placeText = findViewById(R.id.location_upsert_place_edit_text);
             placeText.setText(location.getPlace());
+
         }
     }
 
@@ -82,14 +82,11 @@ public class LocationUpsertActivity extends AppCompatActivity {
                             DatabaseReference newLocationSnap = locationRef.push();
                             newLocationSnap.setValue(location);
 
-                            Uri dbKeyUri = new Uri.Builder()
-                                    .appendPath(getString(R.string.db_location_txt))
-                                    .appendPath(newLocationSnap.getKey())
-                                    .build();
+                            location.setKey(newLocationSnap.getKey());
 
                             Intent showLocationIntent = new Intent()
                                     .setAction(Intent.ACTION_VIEW)
-                                    .setData(dbKeyUri);
+                                    .putExtra(getString(R.string.location_txt), location);
 
                             setResult(RESULT_OK, showLocationIntent);
                             finish();
