@@ -385,6 +385,7 @@ public class MapsActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker) {
                 LocationDb loc = (LocationDb) marker.getTag();
+                Log.d("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", (loc != null) ? loc.getName() : "null");
                 if (loc == null) {
                     LatLng pos = marker.getPosition();
 
@@ -395,20 +396,14 @@ public class MapsActivity extends AppCompatActivity
                             Address address = addresses.get(0);
 
                             if (address != null) {
-                                String country = address.getCountryName();
-                                String city = address.getLocality();
-
-                                country = (country != null) ? country : "Unknown";
-                                city = (city != null) ? city : "Unknown";
-
-                                loc = new LocationDb(pos, city, country);
+                                loc = new LocationDb(pos, address.getLocality(), address.getCountryName());
                                 Intent addIntent = new Intent(getApplicationContext(),
                                         LocationUpsertActivity.class)
                                         .setAction(Intent.ACTION_INSERT)
                                         .putExtra(getString(R.string.location_txt), loc);
 
                                 startActivityForResult(addIntent, 1);
-                                mMap.clear();
+                                marker.remove();
 
                                 return true;
                             }

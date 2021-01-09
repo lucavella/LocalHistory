@@ -76,6 +76,9 @@ public class LocationDb implements Serializable {
     }
 
     public String getPlace() {
-        return String.format("%s, %s", city, country);
+        String cityNonNull = (city != null) ? city : "Unknown";
+        String countryNonNull = (country != null) ? country : "Unknown";
+
+        return String.format("%s, %s", cityNonNull, countryNonNull);
     }
 }

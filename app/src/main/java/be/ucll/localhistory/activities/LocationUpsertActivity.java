@@ -52,10 +52,8 @@ public class LocationUpsertActivity extends AppCompatActivity {
             );
 
             EditText placeText = (EditText)findViewById(R.id.location_upsert_place_edit_text);
+
             placeText.setText(location.getPlace());
-            if ((location.getCity() != null) && (location.getCountry() != null)) {
-                placeText.setEnabled(false);
-            }
         }
     }
 
