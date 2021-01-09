@@ -18,8 +18,8 @@ import be.ucll.localhistory.R;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationSearchAdapter extends SimpleCursorAdapter {
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference locationRef = database.getReference("locations");
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference locationRef = database.getReference("locations");
 
     private static final String[] mVisible =
             {
