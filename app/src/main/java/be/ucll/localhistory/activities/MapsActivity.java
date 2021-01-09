@@ -408,6 +408,7 @@ public class MapsActivity extends AppCompatActivity
                                         .putExtra(getString(R.string.location_txt), loc);
 
                                 startActivityForResult(addIntent, 1);
+                                mMap.clear();
 
                                 return true;
                             }

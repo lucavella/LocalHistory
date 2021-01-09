@@ -3,11 +3,13 @@ package be.ucll.localhistory.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +33,7 @@ public class LocationUpsertActivity extends AppCompatActivity {
         setTitle(R.string.title_activity_location_insert);
 
         createButtonClickListener();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         handleIntent(getIntent());
     }
@@ -54,6 +57,14 @@ public class LocationUpsertActivity extends AppCompatActivity {
                 placeText.setEnabled(false);
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        setResult(RESULT_CANCELED);
+        finish();
+
+        return true;
     }
 
     private void createButtonClickListener() {
