@@ -2,11 +2,20 @@ package be.ucll.localhistory.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class LocationDb {
+import java.io.Serializable;
+
+public class LocationDb implements Serializable {
     private LatLngDb position;
     private String name, description, city, country;
 
     public LocationDb() {
+    }
+
+    public LocationDb(LatLng position, String city, String country) {
+        this.position = new LatLngDb();
+        this.position.fromLatLng(position);
+        this.city = city;
+        this.country = country;
     }
 
     public LocationDb(LatLngDb position, String name, String description, String city, String country) {
@@ -64,5 +73,9 @@ public class LocationDb {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPlace() {
+        return String.format("%s, %s", city, country);
     }
 }

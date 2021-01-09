@@ -2,11 +2,13 @@ package be.ucll.localhistory.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.Serializable;
+
 /*
 Firebase serializer needs empty constructor
 Does not exist with Google Maps' LatLng
  */
-public class LatLngDb {
+public class LatLngDb implements Serializable {
     private double latitude;
     private double longitude;
 

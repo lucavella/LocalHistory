@@ -13,4 +13,12 @@
     <string name="no_results">No results</string>
     <string name="db_location_txt">locations</string>
     <string name="location_add_failed">Error retrieving location info</string>
+    <string name="title_activity_location_insert">New location</string>
+    <string name="location_upsert_name">Name</string>
+    <string name="location_upsert_place">Place</string>
+    <string name="location_upsert_description">Description</string>
+    <string name="location_txt">location</string>
+    <string name="location_upsert_done">Done</string>
+    <string name="location_upsert_incomplete">Not all fields filled in</string>
+    <string name="location_upsert_description_hint">Description, history, trivia, ...</string>
 </resources>

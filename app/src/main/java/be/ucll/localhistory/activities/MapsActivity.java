@@ -398,18 +398,18 @@ public class MapsActivity extends AppCompatActivity
                                 String country = address.getCountryName();
                                 String city = address.getLocality();
 
-                                if ((country != null) && (city != null)) {
-                                    loc = new LocationDb(pos, random(), random(), city, country);
-                                    locationRef.push().setValue(loc);
+                                country = (country != null) ? country : "Unknown";
+                                city = (city != null) ? city : "Unknown";
 
-                                    marker.remove();
-                                    addMarker(pos, loc.getName(), 240f, loc);
+                                loc = new LocationDb(pos, city, country);
+                                Intent addIntent = new Intent(getApplicationContext(),
+                                        LocationUpsertActivity.class)
+                                        .setAction(Intent.ACTION_INSERT)
+                                        .putExtra(getString(R.string.location_txt), loc);
 
-                                    MAP_FOLLOW_ME = false;
-                                    jumpToLocation(pos, 16.0f, true);
+                                startActivityForResult(addIntent, 1);
 
-                                    return true;
-                                }
+                                return true;
                             }
                         }
                     }
