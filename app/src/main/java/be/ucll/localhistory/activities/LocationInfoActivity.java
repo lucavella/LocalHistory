@@ -1,5 +1,6 @@
 package be.ucll.localhistory.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
@@ -96,10 +98,22 @@ public class LocationInfoActivity extends AppCompatActivity {
                 return true;
 
             case R.id.menu_location_delete:
-                locationRef.child(location.getKey()).removeValue();
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.location_delete_dialog_title))
+                        .setMessage(R.string.location_delete_dialog_msg)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                locationRef.child(location.getKey()).removeValue();
 
-                setResult(RESULT_OK);
-                finish();
+                                setResult(RESULT_OK);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+
+                return true;
 
             default:
                 setResult(RESULT_CANCELED);

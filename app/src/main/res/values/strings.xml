@@ -26,4 +26,6 @@
     <string name="title_activity_location_info">Location info</string>
     <string name="menu_edit_text">Edit</string>
     <string name="menu_delete_text">Delete</string>
+    <string name="location_delete_dialog_title">Delete location</string>
+    <string name="location_delete_dialog_msg">Are you sure you want to delete this location?</string>
 </resources>
