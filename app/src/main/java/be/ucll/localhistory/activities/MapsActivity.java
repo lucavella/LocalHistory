@@ -157,25 +157,19 @@ public class MapsActivity extends AppCompatActivity  {
                                 Log.e("error", databaseError.getMessage());
                             }
                         });
-                return false;
+                return true;
             }
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                final Intent searchIntent = new Intent(getApplicationContext(),
-                        LocationSearchableActivity.class)
-                        .setAction(Intent.ACTION_SEARCH)
-                        .putExtra(SearchManager.QUERY, query);
-                startActivityForResult(searchIntent, 1);
-
-                return true;
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (newText.length() >= 2) {
+                if (newText.length() >= 3) {
                     suggestionsAdapter.updateCursorByQuery(newText);
                 }
                 return false;
