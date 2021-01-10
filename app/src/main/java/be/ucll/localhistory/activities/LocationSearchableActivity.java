@@ -48,12 +48,12 @@ public class LocationSearchableActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_search_results);
 
-        ListView resultsListView = findViewById(R.id.location_search_results_listview);
-        TextView emptyView = findViewById(R.id.no_result_textview);
+        ListView resultsListView = findViewById(R.id.location_searchable_list_view);
+        TextView emptyView = findViewById(R.id.location_searchable_no_result_text_view);
         resultsListView.setEmptyView(emptyView);
 
         swipeRefreshLayout =
-                findViewById(R.id.location_search_results_swipe_refresh);
+                findViewById(R.id.location_searchable_swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
 
         handleIntent(getIntent());
@@ -62,12 +62,12 @@ public class LocationSearchableActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.activity_maps_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_location_searchable, menu);
 
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView =
-                (SearchView) menu.findItem(R.id.location_search).getActionView();
+                (SearchView) menu.findItem(R.id.location_searchable_search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
@@ -79,11 +79,11 @@ public class LocationSearchableActivity extends AppCompatActivity
         super.onPrepareOptionsMenu(menu);
 
         final MenuItem searchMenuItem =
-                menu.findItem(R.id.location_search);
+                menu.findItem(R.id.location_searchable_search);
         final SearchView searchView =
                 (SearchView)searchMenuItem.getActionView();
         final ListView resultsListView =
-                findViewById(R.id.location_search_results_listview);
+                findViewById(R.id.location_searchable_list_view);
         this.searchView = searchView;
 
         searchView.setIconifiedByDefault(false);
@@ -169,7 +169,7 @@ public class LocationSearchableActivity extends AppCompatActivity
                 resultsAdapter.updateCursorByQuery(query);
 
                 final ListView resultsListView =
-                        findViewById(R.id.location_search_results_listview);
+                        findViewById(R.id.location_searchable_list_view);
                 resultsListView.setAdapter(resultsAdapter);
                 createListViewOnClickListener();
             }
@@ -177,7 +177,7 @@ public class LocationSearchableActivity extends AppCompatActivity
     }
 
     private void createListViewOnClickListener() {
-        final ListView resultsListView = findViewById(R.id.location_search_results_listview);
+        final ListView resultsListView = findViewById(R.id.location_searchable_list_view);
 
         resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

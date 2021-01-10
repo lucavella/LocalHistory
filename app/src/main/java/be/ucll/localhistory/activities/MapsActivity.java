@@ -55,7 +55,7 @@ public class MapsActivity extends AppCompatActivity  {
 
         if (menu != null) {
             MenuItem searchMenuItem =
-                    menu.findItem(R.id.location_search);
+                    menu.findItem(R.id.maps_search);
 
             searchMenuItem.collapseActionView();
         }
@@ -64,12 +64,12 @@ public class MapsActivity extends AppCompatActivity  {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.activity_maps_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_maps, menu);
 
         SearchManager searchManager =
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView =
-                (SearchView) menu.findItem(R.id.location_search).getActionView();
+                (SearchView) menu.findItem(R.id.maps_search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
@@ -87,7 +87,7 @@ public class MapsActivity extends AppCompatActivity  {
         );
 
         final MenuItem searchMenuItem =
-                menu.findItem(R.id.location_search);
+                menu.findItem(R.id.maps_search);
         final SearchView searchView =
                 (SearchView) searchMenuItem.getActionView();
         searchView.setSuggestionsAdapter(suggestionsAdapter);

@@ -52,7 +52,7 @@ public class LocationInfoActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_details_menu, menu);
+        inflater.inflate(R.menu.menu_acticity_location_info, menu);
 
         return true;
     }
