@@ -46,7 +46,7 @@ public class LocationDb implements Serializable {
     }
 
     public String getCity() {
-        return city;
+        return (city != null) ? city : "Unknown";
     }
 
     public void setCity(String city) {
@@ -54,7 +54,7 @@ public class LocationDb implements Serializable {
     }
 
     public String getCountry() {
-        return country;
+        return (country != null) ? country : "Unknown";
     }
 
     public void setCountry(String country) {
