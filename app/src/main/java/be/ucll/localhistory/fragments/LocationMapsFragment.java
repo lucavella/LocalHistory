@@ -115,7 +115,10 @@ public class LocationMapsFragment extends Fragment
 
     @Override
     public void onMapLongClick(LatLng latLng) {
+        MAP_FOLLOW_ME = false;
+
         addMarker(latLng, "Add new", 50f, null);
+        jumpToLocation(latLng, 16.0f, true);
     }
 
     @Override
