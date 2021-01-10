@@ -31,12 +31,13 @@ import be.ucll.localhistory.models.LocationDb;
 
 public class MapsActivity extends AppCompatActivity  {
 
+    private Menu menu;
+
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference locationRef = database.getReference("locations");
 
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
@@ -45,6 +46,18 @@ public class MapsActivity extends AppCompatActivity  {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.activity_maps, new LocationMapsFragment())
                     .commit();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (menu != null) {
+            MenuItem searchMenuItem =
+                    menu.findItem(R.id.location_search);
+
+            searchMenuItem.collapseActionView();
         }
     }
 
@@ -66,6 +79,7 @@ public class MapsActivity extends AppCompatActivity  {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        this.menu = menu;
 
         final LocationSearchAdapter suggestionsAdapter = new LocationSearchAdapter(
                 this,
@@ -111,8 +125,6 @@ public class MapsActivity extends AppCompatActivity  {
 
             @Override
             public boolean onSuggestionClick(int position) {
-                searchMenuItem.collapseActionView();
-
                 String locationId = suggestionsAdapter.getLocationKeyAtPosition(position);
 
                 locationRef.child(locationId)
