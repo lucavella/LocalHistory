@@ -45,6 +45,14 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
+            android:name=".activities.LocationInfoActivity"
+            android:label="@string/title_activity_location_info"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activities.LocationUpsertActivity"
             android:launchMode="singleTop">
             <intent-filter>

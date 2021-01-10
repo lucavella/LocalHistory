@@ -363,8 +363,8 @@ public class MapsActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                LocationDb loc = (LocationDb) marker.getTag();
-                if (loc == null) {
+                LocationDb location = (LocationDb) marker.getTag();
+                if (location == null) {
                     LatLng pos = marker.getPosition();
 
                     try {
@@ -374,11 +374,11 @@ public class MapsActivity extends AppCompatActivity
                             Address address = addresses.get(0);
 
                             if (address != null) {
-                                loc = new LocationDb(pos, address.getLocality(), address.getCountryName());
+                                location = new LocationDb(pos, address.getLocality(), address.getCountryName());
                                 Intent addIntent = new Intent(getApplicationContext(),
                                         LocationUpsertActivity.class)
                                         .setAction(Intent.ACTION_INSERT)
-                                        .putExtra(getString(R.string.location_txt), loc);
+                                        .putExtra(getString(R.string.location_txt), location);
 
                                 startActivityForResult(addIntent, 1);
                                 marker.remove();
@@ -394,6 +394,14 @@ public class MapsActivity extends AppCompatActivity
 
                     marker.remove();
                     Toast.makeText(MapsActivity.this, R.string.location_add_failed, Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent editIntent = new Intent(getApplicationContext(),
+                            LocationInfoActivity.class)
+                            .setAction(Intent.ACTION_VIEW)
+                            .putExtra(getString(R.string.location_txt), location);
+
+                    startActivityForResult(editIntent, 1);
+                    marker.remove();
                 }
 
                 return true;
