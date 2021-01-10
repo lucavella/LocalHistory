@@ -115,6 +115,7 @@ public class LocationSearchableActivity extends AppCompatActivity
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
+                searchView.clearFocus();
                 return true;
             }
         });
@@ -123,8 +124,6 @@ public class LocationSearchableActivity extends AppCompatActivity
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchMenuItem.collapseActionView();
-                searchView.clearFocus();
-
                 return true;
             }
 

@@ -118,6 +118,7 @@ public class MapsActivity extends AppCompatActivity  {
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
+                searchView.clearFocus();
                 return true;
             }
         });
@@ -130,8 +131,9 @@ public class MapsActivity extends AppCompatActivity  {
 
             @Override
             public boolean onSuggestionClick(int position) {
-                String locationId = suggestionsAdapter.getLocationKeyAtPosition(position);
+                searchMenuItem.collapseActionView();
 
+                String locationId = suggestionsAdapter.getLocationKeyAtPosition(position);
                 locationRef.child(locationId)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -162,8 +164,6 @@ public class MapsActivity extends AppCompatActivity  {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchMenuItem.collapseActionView();
-
                 final Intent searchIntent = new Intent(getApplicationContext(),
                         LocationSearchableActivity.class)
                         .setAction(Intent.ACTION_SEARCH)
