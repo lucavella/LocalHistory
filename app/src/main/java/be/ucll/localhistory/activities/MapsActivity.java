@@ -175,7 +175,9 @@ public class MapsActivity extends AppCompatActivity  {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                suggestionsAdapter.updateAdapterCursorByQuery(newText);
+                if (newText.length() >= 2) {
+                    suggestionsAdapter.updateAdapterCursorByQuery(newText);
+                }
                 return false;
             }
         });
