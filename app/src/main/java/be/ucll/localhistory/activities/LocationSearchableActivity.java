@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,7 +31,13 @@ import be.ucll.localhistory.R;
 import be.ucll.localhistory.helpers.LocationSearchAdapter;
 import be.ucll.localhistory.models.LocationDb;
 
-public class LocationSearchableActivity extends AppCompatActivity {
+public class LocationSearchableActivity extends AppCompatActivity
+        implements
+        SwipeRefreshLayout.OnRefreshListener {
+
+    private LocationSearchAdapter resultsAdapter;
+    private SearchView searchView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference locationRef = database.getReference("locations");
@@ -45,13 +52,11 @@ public class LocationSearchableActivity extends AppCompatActivity {
         TextView emptyView = findViewById(R.id.no_result_textview);
         resultsListView.setEmptyView(emptyView);
 
-        handleIntent(getIntent());
-    }
+        swipeRefreshLayout =
+                findViewById(R.id.location_search_results_swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleIntent(intent);
+        handleIntent(getIntent());
     }
 
     @Override
@@ -79,6 +84,8 @@ public class LocationSearchableActivity extends AppCompatActivity {
                 (SearchView)searchMenuItem.getActionView();
         final ListView resultsListView =
                 findViewById(R.id.location_search_results_listview);
+        this.searchView = searchView;
+
         searchView.setIconifiedByDefault(false);
         searchView.setFocusable(true);
 
@@ -133,9 +140,26 @@ public class LocationSearchableActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    @Override
+    public void onRefresh() {
+        String query = searchView.getQuery().toString();
+
+        if (query.length() >= 2) {
+            resultsAdapter.updateAdapterCursorByQuery(query);
+        }
+
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            final LocationSearchAdapter resultsAdapter = new LocationSearchAdapter(
+            resultsAdapter = new LocationSearchAdapter(
                     this,
                     R.layout.location_search_suggestion_item
             );
