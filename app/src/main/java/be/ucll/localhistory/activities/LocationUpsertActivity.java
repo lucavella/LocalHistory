@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,6 +17,7 @@ import be.ucll.localhistory.R;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationUpsertActivity extends AppCompatActivity {
+
     private LocationDb location;
     private boolean locationIsNew;
 
@@ -53,7 +53,21 @@ public class LocationUpsertActivity extends AppCompatActivity {
 
             EditText placeText = findViewById(R.id.location_upsert_place_edit_text);
             placeText.setText(location.getPlace());
+        }
+        else if (Intent.ACTION_EDIT.equals(intent.getAction())) {
+            setTitle(R.string.title_activity_location_edit);
+            locationIsNew = false;
 
+            location = (LocationDb)intent.getSerializableExtra(
+                    getString(R.string.location_txt)
+            );
+
+            EditText nameText = findViewById(R.id.location_upsert_name_edit_text);
+            EditText placeText = findViewById(R.id.location_upsert_place_edit_text);
+            EditText descriptionText = findViewById(R.id.location_upsert_description_edit_text);
+            nameText.setText(location.getName());
+            placeText.setText(location.getPlace());
+            descriptionText.setText(location.getDescription());
         }
     }
 
@@ -66,7 +80,7 @@ public class LocationUpsertActivity extends AppCompatActivity {
     }
 
     private void createButtonClickListener() {
-        ((Button)findViewById(R.id.location_upsert_done_button))
+        findViewById(R.id.location_upsert_done_button)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -79,10 +93,14 @@ public class LocationUpsertActivity extends AppCompatActivity {
                             location.setName(name);
                             location.setDescription(description);
 
-                            DatabaseReference newLocationSnap = locationRef.push();
-                            newLocationSnap.setValue(location);
+                            if (locationIsNew) {
+                                DatabaseReference newLocationSnap = locationRef.push();
+                                newLocationSnap.setValue(location);
 
-                            location.setKey(newLocationSnap.getKey());
+                                location.setKey(newLocationSnap.getKey());
+                            } else {
+                                locationRef.child(location.getKey()).setValue(location);
+                            }
 
                             Intent showLocationIntent = new Intent()
                                     .setAction(Intent.ACTION_VIEW)
