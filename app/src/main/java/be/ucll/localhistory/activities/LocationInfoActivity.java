@@ -3,6 +3,7 @@ package be.ucll.localhistory.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -12,16 +13,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.models.LocationDb;
 
-public class LocationInfoActivity extends AppCompatActivity {
+public class LocationInfoActivity extends AppCompatActivity
+        implements
+        SwipeRefreshLayout.OnRefreshListener{
 
     private LocationDb location;;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference locationRef = database.getReference("locations");
@@ -33,6 +42,9 @@ public class LocationInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_location_info);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        swipeRefreshLayout = findViewById(R.id.location_info_swipe_refresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         handleIntent(getIntent());
     }
@@ -62,27 +74,26 @@ public class LocationInfoActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onRefresh() {
+        locationRef.child(location.getKey())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                location = snapshot.getValue(LocationDb.class);
+                location.setKey(snapshot.getKey());
 
-        if (resultCode == RESULT_OK) {
-            if (Intent.ACTION_VIEW.equals(data.getAction())) {
-                location = (LocationDb) data.getSerializableExtra(
-                        getString(R.string.location_txt)
-                );
+                swipeRefreshLayout.setRefreshing(false);
 
                 updateLocationTextInfo();
             }
-        }
-    }
 
-    private void updateLocationTextInfo() {
-        TextView nameText = findViewById(R.id.location_info_name_val_text_view);
-        TextView placeText = findViewById(R.id.location_info_place_val_text_view);
-        TextView descriptionText = findViewById(R.id.location_info_description_val_text_view);
-        nameText.setText(location.getName());
-        placeText.setText(location.getPlace());
-        descriptionText.setText(location.getDescription());
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                swipeRefreshLayout.setRefreshing(false);
+
+                Log.e("error", error.getMessage());
+            }
+        });
     }
 
     @Override
@@ -120,5 +131,29 @@ public class LocationInfoActivity extends AppCompatActivity {
                 finish();
                 return true;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (Intent.ACTION_VIEW.equals(data.getAction())) {
+                location = (LocationDb) data.getSerializableExtra(
+                        getString(R.string.location_txt)
+                );
+
+                updateLocationTextInfo();
+            }
+        }
+    }
+
+    private void updateLocationTextInfo() {
+        TextView nameText = findViewById(R.id.location_info_name_val_text_view);
+        TextView placeText = findViewById(R.id.location_info_place_val_text_view);
+        TextView descriptionText = findViewById(R.id.location_info_description_val_text_view);
+        nameText.setText(location.getName());
+        placeText.setText(location.getPlace());
+        descriptionText.setText(location.getDescription());
     }
 }
