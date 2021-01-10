@@ -171,14 +171,16 @@ public class MapsActivity extends AppCompatActivity  {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            if (Intent.ACTION_VIEW.equals(data.getAction())) {
-                LocationDb location = (LocationDb) data.getSerializableExtra(
-                        getString(R.string.location_txt)
-                );
+            if (data != null) {
+                if (Intent.ACTION_VIEW.equals(data.getAction())) {
+                    LocationDb location = (LocationDb) data.getSerializableExtra(
+                            getString(R.string.location_txt)
+                    );
 
-                LocationMapsFragment locationMapsFragment = (LocationMapsFragment)getSupportFragmentManager()
-                        .findFragmentById(R.id.activity_maps);
-                locationMapsFragment.showLocation(location);
+                    LocationMapsFragment locationMapsFragment = (LocationMapsFragment)getSupportFragmentManager()
+                            .findFragmentById(R.id.activity_maps);
+                    locationMapsFragment.showLocation(location);
+                }
             }
         }
     }

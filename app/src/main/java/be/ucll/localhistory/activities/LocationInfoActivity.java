@@ -11,12 +11,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationInfoActivity extends AppCompatActivity {
 
-    private LocationDb location;
+    private LocationDb location;;
+
+    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference locationRef = database.getReference("locations");
 
 
     @Override
@@ -88,6 +94,12 @@ public class LocationInfoActivity extends AppCompatActivity {
 
                 startActivityForResult(editIntent, 1);
                 return true;
+
+            case R.id.menu_location_delete:
+                locationRef.child(location.getKey()).removeValue();
+
+                setResult(RESULT_OK);
+                finish();
 
             default:
                 setResult(RESULT_CANCELED);
