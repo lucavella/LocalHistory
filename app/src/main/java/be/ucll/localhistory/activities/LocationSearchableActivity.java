@@ -130,7 +130,7 @@ public class LocationSearchableActivity extends AppCompatActivity
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() >= 2) {
                     final LocationSearchAdapter resultsAdapter = (LocationSearchAdapter) resultsListView.getAdapter();
-                    resultsAdapter.updateAdapterCursorByQuery(newText);
+                    resultsAdapter.updateCursorByQuery(newText);
                 }
 
                 return false;
@@ -151,7 +151,7 @@ public class LocationSearchableActivity extends AppCompatActivity
         String query = searchView.getQuery().toString();
 
         if (query.length() >= 2) {
-            resultsAdapter.updateAdapterCursorByQuery(query);
+            resultsAdapter.updateCursorByQuery(query);
         }
 
         swipeRefreshLayout.setRefreshing(false);
@@ -166,7 +166,7 @@ public class LocationSearchableActivity extends AppCompatActivity
 
             String query = intent.getStringExtra(SearchManager.QUERY);
             if (query != null) {
-                resultsAdapter.updateAdapterCursorByQuery(query);
+                resultsAdapter.updateCursorByQuery(query);
 
                 final ListView resultsListView =
                         findViewById(R.id.location_search_results_listview);

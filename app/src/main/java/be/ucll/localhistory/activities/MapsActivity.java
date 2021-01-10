@@ -109,7 +109,7 @@ public class MapsActivity extends AppCompatActivity  {
 
                         String query = searchView.getQuery().toString();
                         if (query.length() >= 2) {
-                            suggestionsAdapter.updateAdapterCursorByQuery(query);
+                            suggestionsAdapter.updateCursorByQuery(query);
                         }
                     }
                 });
@@ -176,7 +176,7 @@ public class MapsActivity extends AppCompatActivity  {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.length() >= 2) {
-                    suggestionsAdapter.updateAdapterCursorByQuery(newText);
+                    suggestionsAdapter.updateCursorByQuery(newText);
                 }
                 return false;
             }
