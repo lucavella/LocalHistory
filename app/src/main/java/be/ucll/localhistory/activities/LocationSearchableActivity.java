@@ -48,6 +48,8 @@ public class LocationSearchableActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_search_results);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         ListView resultsListView = findViewById(R.id.location_searchable_list_view);
         TextView emptyView = findViewById(R.id.location_searchable_no_result_text_view);
         resultsListView.setEmptyView(emptyView);
@@ -138,6 +140,19 @@ public class LocationSearchableActivity extends AppCompatActivity
         });
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.location_searchable_search:
+                return false;
+
+            default:
+                setResult(RESULT_CANCELED);
+                finish();
+                return true;
+        }
     }
 
     @Override
