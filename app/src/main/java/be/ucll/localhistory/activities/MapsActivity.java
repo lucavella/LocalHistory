@@ -106,6 +106,11 @@ public class MapsActivity extends AppCompatActivity  {
                         if (imm != null) { // it's never null. I've added this line just to make the compiler happy
                             imm.showSoftInput(searchView.findFocus(), 0);
                         }
+
+                        String query = searchView.getQuery().toString();
+                        if (query.length() >= 2) {
+                            suggestionsAdapter.updateAdapterCursorByQuery(query);
+                        }
                     }
                 });
                 return true;
