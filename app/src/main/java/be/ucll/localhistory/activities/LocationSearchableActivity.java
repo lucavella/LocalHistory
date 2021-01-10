@@ -37,7 +37,8 @@ public class LocationSearchableActivity extends AppCompatActivity
 
     private LocationSearchAdapter resultsAdapter;
     private SearchView searchView;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout resultsSwipeRefreshLayout;
+    private SwipeRefreshLayout emptySwipeRefreshLayout;
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference locationRef = database.getReference("locations");
@@ -51,12 +52,14 @@ public class LocationSearchableActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         ListView resultsListView = findViewById(R.id.location_searchable_list_view);
-        TextView emptyView = findViewById(R.id.location_searchable_no_result_text_view);
+        TextView emptyView = findViewById(R.id.location_searchable_empty_text_view);
         resultsListView.setEmptyView(emptyView);
 
-        swipeRefreshLayout =
-                findViewById(R.id.location_searchable_swipe_refresh);
-        swipeRefreshLayout.setOnRefreshListener(this);
+        resultsSwipeRefreshLayout =
+                findViewById(R.id.location_searchable_results_swipe_refresh);
+        emptySwipeRefreshLayout =
+                findViewById(R.id.location_searchable_empty_swipe_refresh);
+        resultsSwipeRefreshLayout.setOnRefreshListener(this);
 
         handleIntent(getIntent());
     }
@@ -168,7 +171,8 @@ public class LocationSearchableActivity extends AppCompatActivity
             resultsAdapter.updateCursorByQuery(query);
         }
 
-        swipeRefreshLayout.setRefreshing(false);
+        resultsSwipeRefreshLayout.setRefreshing(false);
+        emptySwipeRefreshLayout.setRefreshing(false);
     }
 
     private void handleIntent(Intent intent) {
