@@ -56,10 +56,10 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         int id = 0;
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            LocationDb loc = ds.getValue(LocationDb.class);
+                            LocationDb location = ds.getValue(LocationDb.class);
                             suggestionsCursor.newRow()
-                                    .add(loc.getName())
-                                    .add(String.format("%s, %s", loc.getCity(), loc.getCountry()))
+                                    .add(location.getName())
+                                    .add(String.format("%s, %s", location.getCity(), location.getCountry()))
                                     .add(id++)
                                     .add(ds.getKey());
                         }

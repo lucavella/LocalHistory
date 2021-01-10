@@ -153,9 +153,10 @@ public class MapsActivity extends AppCompatActivity
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                LocationDb loc = dataSnapshot.getValue(LocationDb.class);
-                                if (loc != null) {
-                                    showLocation(loc);
+                                LocationDb location = dataSnapshot.getValue(LocationDb.class);
+                                if (location != null) {
+                                    location.setKey(dataSnapshot.getKey());
+                                    showLocation(location);
                                 } else {
                                     Toast.makeText(MapsActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
                                 }

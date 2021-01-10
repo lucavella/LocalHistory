@@ -165,11 +165,13 @@ public class LocationSearchableActivity extends AppCompatActivity {
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                LocationDb loc = dataSnapshot.getValue(LocationDb.class);
-                                if (loc != null) {
+                                LocationDb location = dataSnapshot.getValue(LocationDb.class);
+                                if (location != null) {
+                                    location.setKey(dataSnapshot.getKey());
+
                                     Intent showLocationIntent = new Intent()
                                             .setAction(Intent.ACTION_VIEW)
-                                            .putExtra(getString(R.string.location_txt), loc);
+                                            .putExtra(getString(R.string.location_txt), location);
 
                                     setResult(RESULT_OK, showLocationIntent);
                                     finish();
