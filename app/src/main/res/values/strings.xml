@@ -24,4 +24,5 @@
     <string name="location_upsert_incomplete">Not all fields filled in</string>
     <string name="title_activity_location_edit">Edit location</string>
     <string name="title_activity_location_info">Location info</string>
+    <string name="menu_edit">Edit</string>
 </resources>

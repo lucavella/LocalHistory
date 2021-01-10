@@ -395,21 +395,13 @@ public class MapsActivity extends AppCompatActivity
 
                     marker.remove();
                     Toast.makeText(MapsActivity.this, R.string.location_add_failed, Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Intent editIntent = new Intent(getApplicationContext(),
-//                            LocationInfoActivity.class)
-//                            .setAction(Intent.ACTION_VIEW)
-//                            .putExtra(getString(R.string.location_txt), location);
-//
-//                    startActivityForResult(editIntent, 1);
-//                    marker.remove();
                 } else {
-                    Intent editIntent = new Intent(getApplicationContext(),
-                            LocationUpsertActivity.class)
-                            .setAction(Intent.ACTION_EDIT)
+                    Intent infoIntent = new Intent(getApplicationContext(),
+                            LocationInfoActivity.class)
+                            .setAction(Intent.ACTION_VIEW)
                             .putExtra(getString(R.string.location_txt), location);
 
-                    startActivityForResult(editIntent, 1);
+                    startActivityForResult(infoIntent, 1);
                     marker.remove();
                 }
 
