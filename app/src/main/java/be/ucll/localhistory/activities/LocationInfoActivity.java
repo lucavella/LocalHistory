@@ -58,6 +58,43 @@ public class LocationInfoActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.menu_location_edit:
+                Intent editIntent = new Intent(getApplicationContext(),
+                        LocationUpsertActivity.class)
+                        .setAction(Intent.ACTION_EDIT)
+                        .putExtra(getString(R.string.location_txt), location);
+
+                startActivityForResult(editIntent, 1);
+                return true;
+
+            case R.id.menu_location_delete:
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.location_delete_dialog_title))
+                        .setMessage(R.string.location_delete_dialog_msg)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                locationRef.child(location.getKey()).removeValue();
+
+                                setResult(RESULT_OK);
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+
+                return true;
+
+            default:
+                setResult(RESULT_CANCELED);
+                finish();
+                return true;
+        }
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         handleIntent(intent);
@@ -94,43 +131,6 @@ public class LocationInfoActivity extends AppCompatActivity
                 Log.e("error", error.getMessage());
             }
         });
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_location_edit:
-                Intent editIntent = new Intent(getApplicationContext(),
-                        LocationUpsertActivity.class)
-                        .setAction(Intent.ACTION_EDIT)
-                        .putExtra(getString(R.string.location_txt), location);
-
-                startActivityForResult(editIntent, 1);
-                return true;
-
-            case R.id.menu_location_delete:
-                new AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.location_delete_dialog_title))
-                        .setMessage(R.string.location_delete_dialog_msg)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                locationRef.child(location.getKey()).removeValue();
-
-                                setResult(RESULT_OK);
-                                finish();
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show();
-
-                return true;
-
-            default:
-                setResult(RESULT_CANCELED);
-                finish();
-                return true;
-        }
     }
 
     @Override
