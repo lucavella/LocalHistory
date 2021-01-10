@@ -1,8 +1,8 @@
 package be.ucll.localhistory.helpers;
 
+import android.app.Activity;
 import android.content.pm.PackageManager;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 
@@ -16,7 +16,7 @@ public abstract class PermissionUtils {
         UNKNOWN,
     }
 
-    public static void requestPermission(AppCompatActivity activity, int requestId,
+    public static void requestPermission(Activity activity, int requestId,
                                          String permission, boolean overrideRationale) {
         // only request permission if overrideRationale is true or if never asked permission before
         // (will also ask if never ask again was selected but request will be denied automatically)
@@ -26,7 +26,7 @@ public abstract class PermissionUtils {
         }
     }
 
-    public static PermissionStatus getPermissionStatus(AppCompatActivity activity, String permission) {
+    public static PermissionStatus getPermissionStatus(Activity activity, String permission) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
             return PermissionStatus.DENIED;
         } else {
