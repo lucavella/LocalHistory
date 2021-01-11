@@ -150,9 +150,11 @@ public class LocationInfoActivity extends AppCompatActivity
 
     private void updateLocationTextInfo() {
         TextView nameText = findViewById(R.id.location_info_name_val_text_view);
+        TextView typeText = findViewById(R.id.location_info_type_val_text_view);
         TextView placeText = findViewById(R.id.location_info_place_val_text_view);
         TextView descriptionText = findViewById(R.id.location_info_description_val_text_view);
         nameText.setText(location.getName());
+        typeText.setText(location.getType().toString());
         placeText.setText(location.getPlace());
         descriptionText.setText(location.getDescription());
     }
