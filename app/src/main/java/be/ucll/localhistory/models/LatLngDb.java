@@ -9,18 +9,24 @@ Firebase serializer needs empty constructor
 Does not exist with Google Maps' LatLng
  */
 public class LatLngDb implements Serializable {
+
     private double latitude;
     private double longitude;
 
+
+    public LatLngDb() {
+        this.latitude = 0;
+        this.longitude = 0;
+    }
 
     public LatLngDb(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public LatLngDb() {
-        this.latitude = 0;
-        this.longitude = 0;
+    public LatLngDb(LatLng latLng) {
+        this.latitude = latLng.latitude;
+        this.longitude = latLng.longitude;
     }
 
     public double getLatitude() {
@@ -41,10 +47,5 @@ public class LatLngDb implements Serializable {
 
     public LatLng ToLatLng() {
         return new LatLng(this.latitude, this.longitude);
-    }
-
-    public void fromLatLng(LatLng latLng) {
-        this.latitude = latLng.latitude;
-        this.longitude = latLng.longitude;
     }
 }
