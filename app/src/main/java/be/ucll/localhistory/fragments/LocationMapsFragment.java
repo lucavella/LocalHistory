@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -119,7 +120,7 @@ public class LocationMapsFragment extends Fragment
         MAP_FOLLOW_ME = false;
 
         addMarker(latLng, "Add new", 0f, null);
-        jumpToLocation(latLng, 16.0f, true);
+        jumpToLocation(latLng, 0f, true);
     }
 
     @Override
@@ -235,13 +236,18 @@ public class LocationMapsFragment extends Fragment
     }
 
     private void jumpToLocation(LatLng location, float zoom, boolean animated) {
-        if (!animated) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, zoom));
+        CameraPosition.Builder positionBuilder = new CameraPosition.Builder();
+        positionBuilder.target(location);
+        if (zoom == 0) {
+            zoom = mMap.getCameraPosition().zoom;
+        }
+        positionBuilder.zoom(zoom);
+
+        CameraUpdate cameraPos = CameraUpdateFactory.newCameraPosition(positionBuilder.build());
+        if (animated) {
+            mMap.animateCamera(cameraPos);
         } else {
-            CameraPosition.Builder positionBuilder = new CameraPosition.Builder();
-            positionBuilder.target(location);
-            positionBuilder.zoom(zoom);
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(positionBuilder.build()));
+            mMap.moveCamera(cameraPos);
         }
     }
 
