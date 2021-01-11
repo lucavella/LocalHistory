@@ -60,6 +60,7 @@ public class LocationSearchableActivity extends AppCompatActivity
         emptySwipeRefreshLayout =
                 findViewById(R.id.location_searchable_empty_swipe_refresh);
         resultsSwipeRefreshLayout.setOnRefreshListener(this);
+        emptySwipeRefreshLayout.setOnRefreshListener(this);
 
         handleIntent(getIntent());
     }
