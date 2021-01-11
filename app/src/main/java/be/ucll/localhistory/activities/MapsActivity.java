@@ -164,7 +164,13 @@ public class MapsActivity extends AppCompatActivity  {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                final Intent searchIntent = new Intent(getApplicationContext(),
+                        LocationSearchableActivity.class)
+                        .setAction(Intent.ACTION_SEARCH)
+                        .putExtra(SearchManager.QUERY, query);
+                startActivityForResult(searchIntent, 1);
+
+                return true;
             }
 
             @Override
