@@ -105,6 +105,7 @@ public class LocationDb implements Serializable {
         this.type = LocationType.values()[typeNr];
     }
 
+    @Exclude
     public String getPlace() {
         String cityNonNull = (city != null) ? city : "Unknown";
         String countryNonNull = (country != null) ? country : "Unknown";
