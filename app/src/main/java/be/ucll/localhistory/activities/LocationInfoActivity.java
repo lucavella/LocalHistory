@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -153,9 +154,16 @@ public class LocationInfoActivity extends AppCompatActivity
         TextView typeText = findViewById(R.id.location_info_type_val_text_view);
         TextView placeText = findViewById(R.id.location_info_place_val_text_view);
         TextView descriptionText = findViewById(R.id.location_info_description_val_text_view);
+
         nameText.setText(location.getName());
         typeText.setText(location.getType().toString());
         placeText.setText(location.getPlace());
         descriptionText.setText(location.getDescription());
+
+        int imageResId = location.getType().getResourceId();
+        if (imageResId > 0) {
+            ImageView typeImage = findViewById((R.id.location_info_type_image_view));
+            typeImage.setImageResource(imageResId);
+        }
     }
 }
