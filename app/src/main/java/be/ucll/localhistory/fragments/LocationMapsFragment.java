@@ -40,6 +40,7 @@ import be.ucll.localhistory.R;
 import be.ucll.localhistory.activities.LocationInfoActivity;
 import be.ucll.localhistory.activities.LocationUpsertActivity;
 import be.ucll.localhistory.helpers.PermissionUtils;
+import be.ucll.localhistory.helpers.PermissionStatus;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationMapsFragment extends Fragment
@@ -170,7 +171,7 @@ public class LocationMapsFragment extends Fragment
     @SuppressLint("MissingPermission")
     private void enableLocation(boolean overrideRationale) {
         if (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PermissionUtils.PermissionStatus.GRANTED) {
+                == PermissionStatus.GRANTED) {
             if (locationManager == null) locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
             if (mMap != null) {
@@ -185,7 +186,7 @@ public class LocationMapsFragment extends Fragment
                         @Override
                         public void onLocationChanged(@NonNull Location location) {
                             if ((MAP_FOLLOW_ME) && (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                                    == PermissionUtils.PermissionStatus.GRANTED)) {
+                                    == PermissionStatus.GRANTED)) {
                                 jumpToMyLocation();
                             }
                         }
@@ -198,7 +199,7 @@ public class LocationMapsFragment extends Fragment
                 @Override
                 public void onClick(View v) {
                     if (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PermissionUtils.PermissionStatus.GRANTED) {
+                            == PermissionStatus.GRANTED) {
                         jumpToMyLocation();
                     } else {
                         enableLocation(true);

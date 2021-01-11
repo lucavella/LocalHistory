@@ -9,13 +9,6 @@ import androidx.core.app.ActivityCompat;
 
 public abstract class PermissionUtils {
 
-    public enum PermissionStatus {
-        GRANTED,
-        DENIED,
-        DONT_ASK_OR_NEVER_ASKED, // if never ask again was selected or never asked before
-        UNKNOWN,
-    }
-
     public static void requestPermission(Activity activity, int requestId,
                                          String permission, boolean overrideRationale) {
         // only request permission if overrideRationale is true or if never asked permission before
