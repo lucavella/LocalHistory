@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class LocationDb implements Serializable {
     private LatLngDb position;
     private String key, name, description, city, country;
+    private LocationType type;
 
     public LocationDb() {
     }
@@ -19,21 +20,23 @@ public class LocationDb implements Serializable {
         this.country = country;
     }
 
-    public LocationDb(LatLngDb position, String name, String description, String city, String country) {
+    public LocationDb(LatLngDb position, String name, String description, String city, String country, LocationType type) {
         this.position = position;
         this.name = name;
         this.description = description;
         this.city = city;
         this.country = country;
+        this.type = type;
     }
 
-    public LocationDb(LatLng position, String name, String description, String city, String country) {
+    public LocationDb(LatLng position, String name, String description, String city, String country, LocationType type) {
         this.position = new LatLngDb();
         this.position.fromLatLng(position);
         this.name = name;
         this.description = description;
         this.city = city;
         this.country = country;
+        this.type = type;
     }
 
     @Exclude
@@ -83,6 +86,14 @@ public class LocationDb implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocationType getType() {
+        return type;
+    }
+
+    public void setType(LocationType type) {
+        this.type = type;
     }
 
     public String getPlace() {
