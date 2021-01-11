@@ -88,12 +88,21 @@ public class LocationDb implements Serializable {
         this.description = description;
     }
 
+    @Exclude
     public LocationType getType() {
         return type;
     }
 
     public void setType(LocationType type) {
         this.type = type;
+    }
+
+    public int getTypeNr() {
+        return type.ordinal();
+    }
+
+    public void setTypeNr(int typeNr) {
+        this.type = LocationType.values()[typeNr];
     }
 
     public String getPlace() {
