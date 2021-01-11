@@ -35,6 +35,7 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
             {
                     R.id.location_search_name,
                     R.id.location_search_place,
+                    R.id.location_search_type_image
             };
 
 
@@ -62,6 +63,7 @@ public class LocationSearchAdapter extends SimpleCursorAdapter {
                             suggestionsCursor.newRow()
                                     .add(location.getName())
                                     .add(String.format("%s, %s", location.getCity(), location.getCountry()))
+                                    .add(location.getType().getResourceId())
                                     .add(id++)
                                     .add(ds.getKey());
                         }

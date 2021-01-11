@@ -1,38 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:paddingLeft="20dp"
-    android:paddingRight="20dp">
-    
-    <TextView
-        android:id="@+id/location_search_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="name" />
+    android:layout_height="match_parent" >
 
-    <TextView
-        android:id="@+id/location_search_place"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/location_search_text_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:textSize="14sp"
-        android:textStyle="italic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="city, country" />
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/location_search_type_image"
+        app:layout_constraintStart_toStartOf="parent">
 
-</LinearLayout >
+        <TextView
+            android:id="@+id/location_search_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="end"
+            android:paddingTop="10dp"
+            android:singleLine="true"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@id/location_search_type_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="name" />
+
+        <TextView
+            android:id="@+id/location_search_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:ellipsize="end"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toStartOf="@id/location_search_type_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="city, country" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/location_search_type_image"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:alpha="0.5"
+        android:padding="10dp"
+        android:scaleType="fitEnd"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="@+id/location_search_text_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/location_search_text_layout" />
+</androidx.constraintlayout.widget.ConstraintLayout>
