@@ -1,5 +1,7 @@
 package be.ucll.localhistory.models;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.Exclude;
 
@@ -7,17 +9,22 @@ import java.io.Serializable;
 
 public class LocationDb implements Serializable {
     private LatLngDb position;
-    private String key, name, description, city, country;
+    private String key, name, description, city, country, geoHash;
     private LocationType type;
+
 
     public LocationDb() {
     }
 
     public LocationDb(LatLng position, String city, String country) {
-        this.position = new LatLngDb();
-        this.position.fromLatLng(position);
+        this.position = new LatLngDb(position);
         this.city = city;
         this.country = country;
+
+        this.geoHash = GeoFireUtils.getGeoHashForLocation(
+                new GeoLocation(
+                        this.position.getLatitude(), this.position.getLongitude()
+                ));
     }
 
     public LocationDb(LatLngDb position, String name, String description, String city, String country, LocationType type) {
@@ -27,16 +34,25 @@ public class LocationDb implements Serializable {
         this.city = city;
         this.country = country;
         this.type = type;
+
+        this.geoHash = GeoFireUtils.getGeoHashForLocation(
+                new GeoLocation(
+                        this.position.getLatitude(), this.position.getLongitude()
+                ));
     }
 
     public LocationDb(LatLng position, String name, String description, String city, String country, LocationType type) {
-        this.position = new LatLngDb();
-        this.position.fromLatLng(position);
+        this.position = new LatLngDb(position);
         this.name = name;
         this.description = description;
         this.city = city;
         this.country = country;
         this.type = type;
+
+        this.geoHash = GeoFireUtils.getGeoHashForLocation(
+                new GeoLocation(
+                        this.position.getLatitude(), this.position.getLongitude()
+                ));
     }
 
     @Exclude
@@ -103,6 +119,14 @@ public class LocationDb implements Serializable {
 
     public void setTypeNr(int typeNr) {
         this.type = LocationType.values()[typeNr];
+    }
+
+    public String getGeoHash() {
+        return geoHash;
+    }
+
+    public void setGeoHash(String geoHash) {
+        this.geoHash = geoHash;
     }
 
     @Exclude
