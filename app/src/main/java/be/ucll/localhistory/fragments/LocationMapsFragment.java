@@ -2,6 +2,7 @@ package be.ucll.localhistory.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
@@ -40,8 +41,8 @@ import java.util.Locale;
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.activities.LocationInfoActivity;
 import be.ucll.localhistory.activities.LocationUpsertActivity;
-import be.ucll.localhistory.helpers.PermissionUtils;
 import be.ucll.localhistory.helpers.PermissionStatus;
+import be.ucll.localhistory.helpers.PermissionUtils;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationMapsFragment extends Fragment
@@ -192,7 +193,9 @@ public class LocationMapsFragment extends Fragment
     private void enableLocation(boolean overrideRationale) {
         if (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 == PermissionStatus.GRANTED) {
-            if (locationManager == null) locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            Activity activity = getActivity();
+            if (activity == null) return;
+            if (locationManager == null) locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
@@ -214,7 +217,9 @@ public class LocationMapsFragment extends Fragment
 
             );
 
-            FloatingActionButton myLocationButton = getView().findViewById(R.id.my_location_button);
+            View view = getView();
+            if (view == null) return;
+            FloatingActionButton myLocationButton = view.findViewById(R.id.my_location_button);
             myLocationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

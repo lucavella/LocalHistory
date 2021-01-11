@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -40,16 +41,19 @@ public class LocationSearchableActivity extends AppCompatActivity
     private SwipeRefreshLayout resultsSwipeRefreshLayout;
     private SwipeRefreshLayout emptySwipeRefreshLayout;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference locationRef = database.getReference("locations");
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference locationRef = database.getReference("locations");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_search_results);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         ListView resultsListView = findViewById(R.id.location_search_list_view);
         TextView emptyView = findViewById(R.id.location_search_empty_text_view);
@@ -147,15 +151,12 @@ public class LocationSearchableActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.location_searchable_search:
-                return false;
-
-            default:
-                setResult(RESULT_CANCELED);
-                finish();
-                return true;
+        if (item.getItemId() == R.id.location_searchable_search) {
+            return false;
         }
+        setResult(RESULT_CANCELED);
+        finish();
+        return true;
     }
 
     @Override

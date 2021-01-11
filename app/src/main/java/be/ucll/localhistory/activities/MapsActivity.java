@@ -33,8 +33,8 @@ public class MapsActivity extends AppCompatActivity  {
 
     private Menu menu;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference locationRef = database.getReference("locations");
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference locationRef = database.getReference("locations");
 
 
     @Override
@@ -144,7 +144,9 @@ public class MapsActivity extends AppCompatActivity  {
 
                                     LocationMapsFragment locationMapsFragment = (LocationMapsFragment)getSupportFragmentManager()
                                             .findFragmentById(R.id.activity_maps);
-                                    locationMapsFragment.showLocation(location);
+                                    if (locationMapsFragment != null) {
+                                        locationMapsFragment.showLocation(location);
+                                    }
 
                                 } else {
                                     Toast.makeText(MapsActivity.this, R.string.location_not_found, Toast.LENGTH_SHORT).show();
@@ -198,7 +200,9 @@ public class MapsActivity extends AppCompatActivity  {
 
                     LocationMapsFragment locationMapsFragment = (LocationMapsFragment)getSupportFragmentManager()
                             .findFragmentById(R.id.activity_maps);
-                    locationMapsFragment.showLocation(location);
+                    if ((locationMapsFragment != null) && (location != null)) {
+                        locationMapsFragment.showLocation(location);
+                    }
                 }
             }
         }

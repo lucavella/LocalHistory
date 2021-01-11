@@ -9,6 +9,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
@@ -23,8 +24,8 @@ public class LocationUpsertActivity extends AppCompatActivity {
     private LocationDb location;
     private boolean locationIsNew;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference locationRef = database.getReference("locations");
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference locationRef = database.getReference("locations");
 
 
     @Override
@@ -33,7 +34,11 @@ public class LocationUpsertActivity extends AppCompatActivity {
         setContentView(R.layout.activity_location_upsert);
 
         createButtonClickListener();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         handleIntent(getIntent());
     }

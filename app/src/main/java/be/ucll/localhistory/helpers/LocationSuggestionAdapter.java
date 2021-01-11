@@ -20,8 +20,8 @@ import be.ucll.localhistory.models.LocationDb;
 
 public class LocationSuggestionAdapter extends SimpleCursorAdapter {
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference locationRef = database.getReference("locations");
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference locationRef = database.getReference("locations");
 
     private static final String[] mVisible =
             {
@@ -58,11 +58,13 @@ public class LocationSuggestionAdapter extends SimpleCursorAdapter {
                         int id = 0;
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             LocationDb location = ds.getValue(LocationDb.class);
-                            suggestionsCursor.newRow()
-                                    .add(location.getName())
-                                    .add(String.format("%s, %s", location.getCity(), location.getCountry()))
-                                    .add(id++)
-                                    .add(ds.getKey());
+                            if (location != null) {
+                                suggestionsCursor.newRow()
+                                        .add(location.getName())
+                                        .add(String.format("%s, %s", location.getCity(), location.getCountry()))
+                                        .add(id++)
+                                        .add(ds.getKey());
+                            }
                         }
 
                         LocationSuggestionAdapter.super.changeCursor(suggestionsCursor);

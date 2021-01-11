@@ -8,13 +8,13 @@ import java.util.List;
 
 import be.ucll.localhistory.models.LocationType;
 
-public class LocationTypeAdapter extends ArrayAdapter {
+public class LocationTypeAdapter extends ArrayAdapter<String> {
 
 
     public LocationTypeAdapter(Context context, int resource) {
-        super(context, resource, new ArrayList());
+        super(context, resource, new ArrayList<String>());
 
-        List<String> data =  new ArrayList<String>();
+        List<String> data = new ArrayList<>();
 
         for (LocationType type : LocationType.values()) {
             data.add(type.toString());

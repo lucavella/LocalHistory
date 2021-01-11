@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -29,12 +30,12 @@ public class LocationInfoActivity extends AppCompatActivity
         implements
         SwipeRefreshLayout.OnRefreshListener{
 
-    private LocationDb location;;
+    private LocationDb location;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference locationRef = database.getReference("locations");
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference locationRef = database.getReference("locations");
 
 
     @Override
@@ -42,7 +43,10 @@ public class LocationInfoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_info);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         swipeRefreshLayout = findViewById(R.id.location_info_swipe_refresh);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -118,11 +122,13 @@ public class LocationInfoActivity extends AppCompatActivity
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 location = snapshot.getValue(LocationDb.class);
-                location.setKey(snapshot.getKey());
+
+                if (location!= null) {
+                    location.setKey(snapshot.getKey());
+                    updateLocationTextInfo();
+                }
 
                 swipeRefreshLayout.setRefreshing(false);
-
-                updateLocationTextInfo();
             }
 
             @Override
@@ -139,12 +145,14 @@ public class LocationInfoActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
-            if (Intent.ACTION_VIEW.equals(data.getAction())) {
-                location = (LocationDb) data.getSerializableExtra(
-                        getString(R.string.location_txt)
-                );
+            if (data != null) {
+                if (Intent.ACTION_VIEW.equals(data.getAction())) {
+                    location = (LocationDb) data.getSerializableExtra(
+                            getString(R.string.location_txt)
+                    );
 
-                updateLocationTextInfo();
+                    updateLocationTextInfo();
+                }
             }
         }
     }

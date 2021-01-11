@@ -1,8 +1,11 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:width="512dp"
     android:height="512dp"
     android:viewportWidth="512"
-    android:viewportHeight="512">
+    android:viewportHeight="512"
+    tools:ignore="VectorRaster"
+    tools:keep="@drawable/ic_location_type_monument">
   <path
       android:pathData="m51,73v71h130.219v-39.809l-9.984,-12.824v-18.367zM51,73"
       android:fillColor="#ffefd5"/>
