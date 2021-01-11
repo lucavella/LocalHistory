@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import be.ucll.localhistory.R;
+import be.ucll.localhistory.helpers.LocationTypeAdapter;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationUpsertActivity extends AppCompatActivity {
@@ -43,6 +45,12 @@ public class LocationUpsertActivity extends AppCompatActivity {
     }
 
     private void handleIntent(Intent intent) {
+        Spinner typeSpinner = findViewById(R.id.location_upsert_type_spinner);
+        LocationTypeAdapter typeAdapter =
+                new LocationTypeAdapter(this, android.R.layout.simple_spinner_item);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeSpinner.setAdapter(typeAdapter);
+
         if (Intent.ACTION_INSERT.equals(intent.getAction())) {
             setTitle(R.string.title_activity_location_insert);
             locationIsNew = true;
@@ -68,6 +76,7 @@ public class LocationUpsertActivity extends AppCompatActivity {
             nameText.setText(location.getName());
             placeText.setText(location.getPlace());
             descriptionText.setText(location.getDescription());
+            typeSpinner.setSelection(location.getTypeNr());
         }
     }
 
@@ -88,10 +97,13 @@ public class LocationUpsertActivity extends AppCompatActivity {
                                 .getText().toString();
                         String description = ((EditText)findViewById(R.id.location_upsert_description_edit_text))
                                 .getText().toString();
+                        int typeNr = ((Spinner)findViewById(R.id.location_upsert_type_spinner))
+                                .getSelectedItemPosition();
 
                         if (!name.isEmpty() && !description.isEmpty()) {
                             location.setName(name);
                             location.setDescription(description);
+                            location.setTypeNr(typeNr);
 
                             if (locationIsNew) {
                                 DatabaseReference newLocationSnap = locationRef.push();
