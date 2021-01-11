@@ -241,11 +241,11 @@ public class LocationMapsFragment extends Fragment
         jumpToLocation(pos, 16.0f, true);
     }
 
-    private void addMarker(LatLng location, String title, float hue, Object data, boolean draggable) {
+    private void addMarker(LatLng position, String title, float hue, Object data, boolean draggable) {
         mMap.clear();
 
         MarkerOptions markerOpt = new MarkerOptions()
-                .position(location)
+                .position(position)
                 .title(title)
                 .icon(BitmapDescriptorFactory.defaultMarker(hue));
 
@@ -255,9 +255,9 @@ public class LocationMapsFragment extends Fragment
         mMarker.setDraggable(draggable);
     }
 
-    private void jumpToLocation(LatLng location, float zoom, boolean animated) {
+    private void jumpToLocation(LatLng position, float zoom, boolean animated) {
         CameraPosition.Builder positionBuilder = new CameraPosition.Builder();
-        positionBuilder.target(location);
+        positionBuilder.target(position);
         if (zoom == 0) {
             zoom = mMap.getCameraPosition().zoom;
         }
