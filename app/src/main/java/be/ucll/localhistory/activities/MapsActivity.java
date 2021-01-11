@@ -25,7 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import be.ucll.localhistory.R;
 import be.ucll.localhistory.fragments.LocationMapsFragment;
-import be.ucll.localhistory.helpers.LocationSearchAdapter;
+import be.ucll.localhistory.helpers.LocationSuggestionAdapter;
 import be.ucll.localhistory.models.LocationDb;
 
 
@@ -81,9 +81,9 @@ public class MapsActivity extends AppCompatActivity  {
         super.onPrepareOptionsMenu(menu);
         this.menu = menu;
 
-        final LocationSearchAdapter suggestionsAdapter = new LocationSearchAdapter(
+        final LocationSuggestionAdapter suggestionsAdapter = new LocationSuggestionAdapter(
                 this,
-                R.layout.location_search_suggestion_item
+                R.layout.item_location_suggestion
         );
 
         final MenuItem searchMenuItem =

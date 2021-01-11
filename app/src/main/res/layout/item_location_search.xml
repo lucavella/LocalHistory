@@ -12,7 +12,7 @@
     android:paddingRight="20dp">
     
     <TextView
-        android:id="@+id/location_name"
+        android:id="@+id/location_search_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
@@ -23,7 +23,7 @@
         tools:text="name" />
 
     <TextView
-        android:id="@+id/location_place"
+        android:id="@+id/location_search_place"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"

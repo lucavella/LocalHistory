@@ -51,14 +51,14 @@ public class LocationSearchableActivity extends AppCompatActivity
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        ListView resultsListView = findViewById(R.id.location_searchable_list_view);
-        TextView emptyView = findViewById(R.id.location_searchable_empty_text_view);
+        ListView resultsListView = findViewById(R.id.location_search_list_view);
+        TextView emptyView = findViewById(R.id.location_search_empty_text_view);
         resultsListView.setEmptyView(emptyView);
 
         resultsSwipeRefreshLayout =
-                findViewById(R.id.location_searchable_results_swipe_refresh);
+                findViewById(R.id.location_search_results_swipe_refresh);
         emptySwipeRefreshLayout =
-                findViewById(R.id.location_searchable_empty_swipe_refresh);
+                findViewById(R.id.location_search_empty_swipe_refresh);
         resultsSwipeRefreshLayout.setOnRefreshListener(this);
         emptySwipeRefreshLayout.setOnRefreshListener(this);
 
@@ -89,7 +89,7 @@ public class LocationSearchableActivity extends AppCompatActivity
         final SearchView searchView =
                 (SearchView)searchMenuItem.getActionView();
         final ListView resultsListView =
-                findViewById(R.id.location_searchable_list_view);
+                findViewById(R.id.location_search_list_view);
         this.searchView = searchView;
 
         searchView.setIconifiedByDefault(false);
@@ -180,7 +180,7 @@ public class LocationSearchableActivity extends AppCompatActivity
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             resultsAdapter = new LocationSearchAdapter(
                     this,
-                    R.layout.location_search_list_item
+                    R.layout.item_location_search
             );
 
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -188,7 +188,7 @@ public class LocationSearchableActivity extends AppCompatActivity
                 resultsAdapter.updateCursorByQuery(query);
 
                 final ListView resultsListView =
-                        findViewById(R.id.location_searchable_list_view);
+                        findViewById(R.id.location_search_list_view);
                 resultsListView.setAdapter(resultsAdapter);
                 createListViewOnClickListener();
             }
@@ -196,12 +196,12 @@ public class LocationSearchableActivity extends AppCompatActivity
     }
 
     private void createListViewOnClickListener() {
-        final ListView resultsListView = findViewById(R.id.location_searchable_list_view);
+        final ListView resultsListView = findViewById(R.id.location_search_list_view);
 
         resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LocationSearchAdapter resultsAdapter = (LocationSearchAdapter)resultsListView.getAdapter();
+                LocationSearchAdapter resultsAdapter = (LocationSearchAdapter) resultsListView.getAdapter();
                 String locationId = resultsAdapter.getLocationKeyAtPosition(position);
 
                 locationRef.child(locationId)
