@@ -179,7 +179,7 @@ public class LocationSearchableActivity extends AppCompatActivity
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             resultsAdapter = new LocationSearchAdapter(
                     this,
-                    R.layout.location_search_suggestion_item
+                    R.layout.location_search_list_item
             );
 
             String query = intent.getStringExtra(SearchManager.QUERY);
