@@ -3,6 +3,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="background">@color/defaultBackground</item>
+        <item name="android:dropDownListViewStyle">@style/lightDropDownListViewStyle</item>
     </style>
 
+    <style name="lightDropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:background">@color/defaultBackground</item>
+    </style>
 </resources>

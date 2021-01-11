@@ -117,7 +117,7 @@ public class LocationMapsFragment extends Fragment
     public void onMapLongClick(LatLng latLng) {
         MAP_FOLLOW_ME = false;
 
-        addMarker(latLng, "Add new", 50f, null);
+        addMarker(latLng, "Add new", 0f, null);
         jumpToLocation(latLng, 16.0f, true);
     }
 
@@ -216,7 +216,7 @@ public class LocationMapsFragment extends Fragment
         MAP_FOLLOW_ME = false;
 
         LatLng pos = location.getPosition().ToLatLng();
-        addMarker(pos, location.getName(), 240f, location);
+        addMarker(pos, location.getName(), 215, location);
         jumpToLocation(pos, 16.0f, true);
     }
 
