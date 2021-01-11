@@ -49,12 +49,14 @@ public class LocationMapsFragment extends Fragment
         OnMapReadyCallback,
         GoogleMap.OnCameraMoveStartedListener,
         GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMarkerDragListener,
         GoogleMap.OnMarkerClickListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static boolean MAP_FOLLOW_ME = true;
 
     private GoogleMap mMap;
+    private Marker mMarker;
     private LocationManager locationManager;
 
 
@@ -85,6 +87,7 @@ public class LocationMapsFragment extends Fragment
 
         mMap.setOnCameraMoveStartedListener(this);
         mMap.setOnMapLongClickListener(this);
+        mMap.setOnMarkerDragListener(this);
         mMap.setOnMarkerClickListener(this);
     }
 
@@ -119,8 +122,24 @@ public class LocationMapsFragment extends Fragment
     public void onMapLongClick(LatLng latLng) {
         MAP_FOLLOW_ME = false;
 
-        addMarker(latLng, "Add new", 0f, null);
+        addMarker(latLng, "Add new", 0f, null, true);
         jumpToLocation(latLng, 0f, true);
+    }
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        LatLng position = marker.getPosition();
+        mMarker.setPosition(position);
     }
 
     @Override
@@ -218,11 +237,11 @@ public class LocationMapsFragment extends Fragment
         MAP_FOLLOW_ME = false;
 
         LatLng pos = location.getPosition().ToLatLng();
-        addMarker(pos, location.getName(), 215, location);
+        addMarker(pos, location.getName(), 215, location, false);
         jumpToLocation(pos, 16.0f, true);
     }
 
-    private void addMarker(LatLng location, String title, float hue, Object data) {
+    private void addMarker(LatLng location, String title, float hue, Object data, boolean draggable) {
         mMap.clear();
 
         MarkerOptions markerOpt = new MarkerOptions()
@@ -230,9 +249,10 @@ public class LocationMapsFragment extends Fragment
                 .title(title)
                 .icon(BitmapDescriptorFactory.defaultMarker(hue));
 
-        Marker marker = mMap.addMarker(markerOpt);
-        marker.setTag(data);
-        marker.showInfoWindow();
+        mMarker = mMap.addMarker(markerOpt);
+        mMarker.setTag(data);
+        mMarker.showInfoWindow();
+        mMarker.setDraggable(draggable);
     }
 
     private void jumpToLocation(LatLng location, float zoom, boolean animated) {
