@@ -12,6 +12,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
+import com.firebase.geofire.GeoQueryBounds;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,9 +36,17 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -56,8 +68,14 @@ public class LocationMapsFragment extends Fragment
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static boolean MAP_FOLLOW_ME = true;
 
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference locationRef = database.getReference("locations");
+
+    private final List<Marker> nearbyMarkers = new ArrayList<>();
+    private final double nearbyRadiusMeters = 200;
+
     private GoogleMap mMap;
-    private Marker mMarker;
+    private Marker targetMarker;
     private LocationManager locationManager;
 
 
@@ -114,6 +132,63 @@ public class LocationMapsFragment extends Fragment
         }
     }
 
+    private LocationListener locationUpdatesHandler = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+            if (MAP_FOLLOW_ME) {
+                jumpToMyLocation();
+            }
+
+            final GeoLocation myGeoLocation = new GeoLocation(location.getLatitude(), location.getLongitude());
+            List<GeoQueryBounds> bounds = GeoFireUtils.getGeoHashQueryBounds(myGeoLocation, nearbyRadiusMeters);
+
+            final List<Task<DataSnapshot>> tasks = new ArrayList<>();
+            for (GeoQueryBounds b : bounds) {
+                Query query = locationRef
+                        .orderByChild("geoHash")
+                        .startAt(b.startHash)
+                        .endAt(b.endHash);
+                tasks.add(query.get());
+            }
+
+            Tasks.whenAllComplete(tasks)
+                    .addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+                        @Override
+                        public void onComplete(@NonNull Task<List<Task<?>>> t) {
+                            for (Marker marker : nearbyMarkers) {
+                                marker.remove();
+                            }
+                            nearbyMarkers.clear();
+
+                            for (Task<DataSnapshot> task : tasks) {
+                                DataSnapshot snapshot = task.getResult();
+                                if (snapshot != null) {
+                                    for (DataSnapshot ds : snapshot.getChildren()) {
+                                        LocationDb location = ds.getValue(LocationDb.class);
+                                        if (location == null) continue;
+                                        location.setKey(ds.getKey());
+
+                                        // filter false positives
+                                        GeoLocation geoLocation = new GeoLocation(location.getPosition().getLatitude(),
+                                                location.getPosition().getLongitude());
+                                        double distanceInM = GeoFireUtils.getDistanceBetween(geoLocation, myGeoLocation);
+
+                                        if (distanceInM <= nearbyRadiusMeters) {
+                                            Marker marker = addMarker(location.getPosition().ToLatLng(),
+                                                    "", 215f, location, false);
+
+                                            nearbyMarkers.add(marker);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+        }
+    };
+
     @Override
     public void onCameraMoveStarted(int reason) {
         if (reason == REASON_GESTURE) MAP_FOLLOW_ME = false;
@@ -123,8 +198,12 @@ public class LocationMapsFragment extends Fragment
     public void onMapLongClick(LatLng latLng) {
         MAP_FOLLOW_ME = false;
 
-        addMarker(latLng, "Add new", 0f, null, true);
-        jumpToLocation(latLng, 0f, true);
+        if (targetMarker != null) {
+            targetMarker.remove();
+        }
+        targetMarker = addMarker(latLng, "Add new", 40f, null, true);
+
+        jumpToLocation(latLng, 0.0f, true);
     }
 
     @Override
@@ -140,7 +219,7 @@ public class LocationMapsFragment extends Fragment
     @Override
     public void onMarkerDragEnd(Marker marker) {
         LatLng position = marker.getPosition();
-        mMarker.setPosition(position);
+        targetMarker.setPosition(position);
     }
 
     @Override
@@ -148,6 +227,7 @@ public class LocationMapsFragment extends Fragment
         LocationDb location = (LocationDb) marker.getTag();
         if (location == null) {
             LatLng pos = marker.getPosition();
+            targetMarker.showInfoWindow();
 
             try {
                 Geocoder geocoder = new Geocoder(getActivity(), Locale.ENGLISH);
@@ -163,7 +243,6 @@ public class LocationMapsFragment extends Fragment
                                 .putExtra(getString(R.string.location_txt), location);
 
                         startActivityForResult(addIntent, 1);
-                        marker.remove();
 
                         return true;
                     }
@@ -174,16 +253,18 @@ public class LocationMapsFragment extends Fragment
                 Log.d("geocoder error", ex.getMessage());
             }
 
-            marker.remove();
             Toast.makeText(getActivity(), R.string.location_add_failed, Toast.LENGTH_SHORT).show();
         } else {
+            if (targetMarker.equals(marker)) {
+                targetMarker.showInfoWindow();
+            }
+
             Intent infoIntent = new Intent(getActivity(),
                     LocationInfoActivity.class)
                     .setAction(Intent.ACTION_VIEW)
                     .putExtra(getString(R.string.location_txt), location);
 
             startActivityForResult(infoIntent, 1);
-            marker.remove();
         }
 
         return true;
@@ -205,17 +286,7 @@ public class LocationMapsFragment extends Fragment
 
             String bestProvider = locationManager.getBestProvider(new Criteria(), false);
             if (bestProvider == null) return;
-            locationManager.requestLocationUpdates(bestProvider, 50, 1, new LocationListener() {
-                        @Override
-                        public void onLocationChanged(@NonNull Location location) {
-                            if ((MAP_FOLLOW_ME) && (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                                    == PermissionStatus.GRANTED)) {
-                                jumpToMyLocation();
-                            }
-                        }
-                    }
-
-            );
+            locationManager.requestLocationUpdates(200, 10, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
 
             View view = getView();
             if (view == null) return;
@@ -242,22 +313,27 @@ public class LocationMapsFragment extends Fragment
         MAP_FOLLOW_ME = false;
 
         LatLng pos = location.getPosition().ToLatLng();
-        addMarker(pos, location.getName(), 215, location, false);
+
+        if (targetMarker != null) {
+            targetMarker.remove();
+        }
+        targetMarker = addMarker(pos, location.getName(), 0f, location, false);
+
         jumpToLocation(pos, 16.0f, true);
     }
 
-    private void addMarker(LatLng position, String title, float hue, Object data, boolean draggable) {
-        mMap.clear();
-
+    private Marker addMarker(LatLng position, String title, float hue, Object data, boolean draggable) {
         MarkerOptions markerOpt = new MarkerOptions()
                 .position(position)
                 .title(title)
                 .icon(BitmapDescriptorFactory.defaultMarker(hue));
 
-        mMarker = mMap.addMarker(markerOpt);
-        mMarker.setTag(data);
-        mMarker.showInfoWindow();
-        mMarker.setDraggable(draggable);
+        Marker marker = mMap.addMarker(markerOpt);
+        marker.setTag(data);
+        marker.showInfoWindow();
+        marker.setDraggable(draggable);
+
+        return marker;
     }
 
     private void jumpToLocation(LatLng position, float zoom, boolean animated) {
