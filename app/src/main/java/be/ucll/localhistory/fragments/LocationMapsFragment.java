@@ -134,9 +134,7 @@ public class LocationMapsFragment extends Fragment
 
     private LocationListener locationUpdatesHandler = new LocationListener() {
         @Override
-        public void onLocationChanged(Location location) {
-            LatLng myLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
+        public void onLocationChanged(@NonNull Location location) {
             if (MAP_FOLLOW_ME) {
                 jumpToMyLocation();
             }
@@ -255,7 +253,7 @@ public class LocationMapsFragment extends Fragment
 
             Toast.makeText(getActivity(), R.string.location_add_failed, Toast.LENGTH_SHORT).show();
         } else {
-            if (targetMarker.equals(marker)) {
+            if ((targetMarker != null) && targetMarker.equals(marker)) {
                 targetMarker.showInfoWindow();
             }
 
@@ -272,10 +270,11 @@ public class LocationMapsFragment extends Fragment
 
     @SuppressLint("MissingPermission")
     private void enableLocation(boolean overrideRationale) {
-        if (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+        final Activity activity = getActivity();
+        if (activity == null) return;
+
+        if (PermissionUtils.getPermissionStatus(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PermissionStatus.GRANTED) {
-            Activity activity = getActivity();
-            if (activity == null) return;
             if (locationManager == null) locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 
             if (mMap != null) {
@@ -284,17 +283,13 @@ public class LocationMapsFragment extends Fragment
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
             }
 
-            String bestProvider = locationManager.getBestProvider(new Criteria(), false);
-            if (bestProvider == null) return;
-            locationManager.requestLocationUpdates(200, 10, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
-
             View view = getView();
             if (view == null) return;
             FloatingActionButton myLocationButton = view.findViewById(R.id.my_location_button);
             myLocationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                    if (PermissionUtils.getPermissionStatus(activity, Manifest.permission.ACCESS_FINE_LOCATION)
                             == PermissionStatus.GRANTED) {
                         jumpToMyLocation();
                     } else {
@@ -303,8 +298,12 @@ public class LocationMapsFragment extends Fragment
                 }
             });
 
+            String bestProvider = locationManager.getBestProvider(new Criteria(), false);
+            if (bestProvider == null) return;
+            locationManager.requestLocationUpdates(200, 10, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
+
         } else {
-            PermissionUtils.requestPermission(getActivity(), LOCATION_PERMISSION_REQUEST_CODE,
+            PermissionUtils.requestPermission(activity, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, overrideRationale);
         }
     }
