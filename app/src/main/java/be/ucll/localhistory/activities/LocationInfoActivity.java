@@ -1,7 +1,13 @@
 package be.ucll.localhistory.activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -17,13 +23,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.firebase.geofire.GeoFireUtils;
+import com.firebase.geofire.GeoLocation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DecimalFormat;
+
 import be.ucll.localhistory.R;
+import be.ucll.localhistory.helpers.PermissionStatus;
+import be.ucll.localhistory.helpers.PermissionUtils;
 import be.ucll.localhistory.models.LocationDb;
 
 public class LocationInfoActivity extends AppCompatActivity
@@ -31,6 +43,8 @@ public class LocationInfoActivity extends AppCompatActivity
         SwipeRefreshLayout.OnRefreshListener{
 
     private LocationDb location;
+
+    private LocationManager locationManager;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -157,15 +171,56 @@ public class LocationInfoActivity extends AppCompatActivity
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void updateLocationTextInfo() {
+        String distanceText = "Unknown";
+
+        if ((PermissionUtils.getPermissionStatus(
+                this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionStatus.GRANTED)) {
+            if (locationManager == null)
+                locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            String bestProvider = locationManager.getBestProvider(new Criteria(), false);
+            if (bestProvider != null) {
+                Location lastLocation = locationManager.getLastKnownLocation(bestProvider);
+
+                if (lastLocation != null) {
+                    GeoLocation geoLocation = new GeoLocation(location.getPosition().getLatitude(),
+                            location.getPosition().getLongitude());
+                    GeoLocation myGeoLocation = new GeoLocation(lastLocation.getLatitude(),
+                            lastLocation.getLongitude());
+
+                    double distanceInM = GeoFireUtils.getDistanceBetween(geoLocation, myGeoLocation);
+
+                    if (distanceInM < 10_000) {
+                        distanceText = String.format("%d m", Math.round(distanceInM));
+                    } else {
+                        double distanceInKm = distanceInM / 1000;
+
+                        if (distanceInKm < 100) {
+                            DecimalFormat round = new DecimalFormat("#.#");
+
+                            distanceText = String.format("%s km", round.format(distanceInKm));
+                        } else {
+                            distanceText = String.format("%d km", Math.round(distanceInKm));
+                        }
+
+                    }
+                }
+
+            }
+        }
+
         TextView nameText = findViewById(R.id.location_info_name_val_text_view);
         TextView typeText = findViewById(R.id.location_info_type_val_text_view);
         TextView placeText = findViewById(R.id.location_info_place_val_text_view);
+        TextView distanceView = findViewById(R.id.location_info_distance_val_text_view);
         TextView descriptionText = findViewById(R.id.location_info_description_val_text_view);
 
         nameText.setText(location.getName());
         typeText.setText(location.getType().toString());
         placeText.setText(location.getPlace());
+        distanceView.setText(distanceText);
         descriptionText.setText(location.getDescription());
 
         int imageResId = location.getType().getResourceId();
