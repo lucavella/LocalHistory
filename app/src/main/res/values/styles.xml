@@ -11,4 +11,14 @@
     <style name="lightDropDownListViewStyle" parent="Widget.AppCompat.ListView.DropDown">
         <item name="android:background">@color/defaultBackground</item>
     </style>
+
+    <style name="AppTheme.Splash" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/ic_launcher_background</item>
+        <item name="android:windowBackground">@drawable/bg_splash</item>
+    </style>
 </resources>
