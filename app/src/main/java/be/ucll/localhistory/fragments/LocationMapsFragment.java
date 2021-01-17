@@ -221,6 +221,10 @@ public class LocationMapsFragment extends Fragment
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (!targetMarker.equals(marker)) {
+            targetMarker.remove();
+        }
+
         LocationDb location = (LocationDb) marker.getTag();
         if (location == null) {
             LatLng pos = marker.getPosition();
