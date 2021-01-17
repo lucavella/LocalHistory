@@ -200,9 +200,7 @@ public class LocationMapsFragment extends Fragment
     public void onMapLongClick(LatLng latLng) {
         MAP_FOLLOW_ME = false;
 
-        if (targetMarker != null) {
-            targetMarker.remove();
-        }
+        removeLocation();
         targetMarker = addMarker(latLng, "Add new", 40f, null, true);
 
         jumpToLocation(latLng, 0.0f, true);
@@ -327,12 +325,16 @@ public class LocationMapsFragment extends Fragment
 
         LatLng pos = location.getPosition().ToLatLng();
 
-        if (targetMarker != null) {
-            targetMarker.remove();
-        }
+        removeLocation();
         targetMarker = addMarker(pos, location.getName(), 0f, location, false);
 
         jumpToLocation(pos, 16.0f, true);
+    }
+
+    public void removeLocation() {
+        if (targetMarker != null) {
+            targetMarker.remove();
+        }
     }
 
     private Marker addMarker(LatLng position, String title, float hue, Object data, boolean draggable) {

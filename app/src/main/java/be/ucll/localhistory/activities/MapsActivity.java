@@ -192,16 +192,22 @@ public class MapsActivity extends AppCompatActivity  {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {
+            LocationMapsFragment locationMapsFragment = (LocationMapsFragment)getSupportFragmentManager()
+                    .findFragmentById(R.id.activity_maps);
+
             if (data != null) {
                 if (Intent.ACTION_VIEW.equals(data.getAction())) {
                     LocationDb location = (LocationDb) data.getSerializableExtra(
                             getString(R.string.location_txt)
                     );
 
-                    LocationMapsFragment locationMapsFragment = (LocationMapsFragment)getSupportFragmentManager()
-                            .findFragmentById(R.id.activity_maps);
                     if ((locationMapsFragment != null) && (location != null)) {
                         locationMapsFragment.showLocation(location);
+                    }
+                }
+                else if (Intent.ACTION_DELETE.equals(data.getAction())) {
+                    if (locationMapsFragment != null) {
+                        locationMapsFragment.removeLocation();
                     }
                 }
             }

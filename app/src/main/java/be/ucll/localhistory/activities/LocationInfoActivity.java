@@ -97,7 +97,9 @@ public class LocationInfoActivity extends AppCompatActivity
                             public void onClick(DialogInterface dialog, int which) {
                                 locationRef.child(location.getKey()).removeValue();
 
-                                setResult(RESULT_OK);
+                                Intent removeLocationIntent = new Intent()
+                                        .setAction(Intent.ACTION_DELETE);
+                                setResult(RESULT_OK, removeLocationIntent);
                                 finish();
                             }
                         })
