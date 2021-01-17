@@ -161,6 +161,9 @@ public class LocationMapsFragment extends Fragment
                             nearbyMarkers.clear();
 
                             for (Task<DataSnapshot> task : tasks) {
+                                if (!task.isSuccessful()) {
+                                    break;
+                                }
                                 DataSnapshot snapshot = task.getResult();
                                 if (snapshot != null) {
                                     for (DataSnapshot ds : snapshot.getChildren()) {
@@ -205,14 +208,10 @@ public class LocationMapsFragment extends Fragment
     }
 
     @Override
-    public void onMarkerDragStart(Marker marker) {
-
-    }
+    public void onMarkerDragStart(Marker marker) { }
 
     @Override
-    public void onMarkerDrag(Marker marker) {
-
-    }
+    public void onMarkerDrag(Marker marker) { }
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
