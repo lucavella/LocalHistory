@@ -88,8 +88,9 @@ public class LocationMapsFragment extends Fragment
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onStart() {
+        super.onStart();
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_location_maps);
         if (mapFragment != null) {
@@ -265,6 +266,20 @@ public class LocationMapsFragment extends Fragment
         }
 
         return true;
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        mMap.setMyLocationEnabled(false);
+        locationManager.removeUpdates(locationUpdatesHandler);
+
+        mMap.setOnCameraMoveStartedListener(null);
+        mMap.setOnMapLongClickListener(null);
+        mMap.setOnMarkerDragListener(null);
+        mMap.setOnMarkerClickListener(null);
     }
 
     @SuppressLint("MissingPermission")
