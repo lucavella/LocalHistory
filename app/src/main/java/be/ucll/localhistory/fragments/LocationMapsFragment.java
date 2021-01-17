@@ -103,7 +103,8 @@ public class LocationMapsFragment extends Fragment
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        enableLocation(false);
+        enableMyLocation(false);
+        enableMyLocationButton();
 
         mMap.setOnCameraMoveStartedListener(this);
         mMap.setOnMapLongClickListener(this);
@@ -117,7 +118,7 @@ public class LocationMapsFragment extends Fragment
             switch (PermissionUtils.getPermissionStatus(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
                 case GRANTED:
                     Toast.makeText(getActivity(), R.string.location_permission_granted, Toast.LENGTH_SHORT).show();
-                    enableLocation(false);
+                    enableMyLocation(false);
                     jumpToMyLocation();
                     break;
                 case DENIED:
@@ -271,7 +272,6 @@ public class LocationMapsFragment extends Fragment
     public void onStop() {
         super.onStop();
 
-        mMap.setMyLocationEnabled(false);
         locationManager.removeUpdates(locationUpdatesHandler);
 
         if (mMap != null) {
@@ -285,7 +285,7 @@ public class LocationMapsFragment extends Fragment
     }
 
     @SuppressLint("MissingPermission")
-    private void enableLocation(boolean overrideRationale) {
+    private void enableMyLocation(boolean overrideRationale) {
         final Activity activity = getActivity();
         if (activity == null) return;
 
@@ -299,29 +299,35 @@ public class LocationMapsFragment extends Fragment
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
             }
 
-            View view = getView();
-            if (view == null) return;
-            FloatingActionButton myLocationButton = view.findViewById(R.id.my_location_button);
-            myLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (PermissionUtils.getPermissionStatus(activity, Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PermissionStatus.GRANTED) {
-                        jumpToMyLocation();
-                    } else {
-                        enableLocation(true);
-                    }
-                }
-            });
-
             String bestProvider = locationManager.getBestProvider(new Criteria(), false);
             if (bestProvider == null) return;
             locationManager.requestLocationUpdates(200, 10, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
 
         } else {
-            PermissionUtils.requestPermission(activity, LOCATION_PERMISSION_REQUEST_CODE,
+            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, overrideRationale);
         }
+    }
+
+    private void enableMyLocationButton() {
+        final Activity activity = getActivity();
+        if (activity == null) return;
+
+        View view = getView();
+        if (view == null) return;
+
+        FloatingActionButton myLocationButton = view.findViewById(R.id.my_location_button);
+        myLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (PermissionUtils.getPermissionStatus(activity, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PermissionStatus.GRANTED) {
+                    jumpToMyLocation();
+                } else {
+                    enableMyLocation(true);
+                }
+            }
+        });
     }
 
     public void showLocation(LocationDb location) {
@@ -382,7 +388,7 @@ public class LocationMapsFragment extends Fragment
             LatLng latlng = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
             jumpToLocation(latlng, 16.0f, true);
         } else {
-            enableLocation(false);
+            enableMyLocation(false);
         }
     }
 }

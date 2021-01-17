@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 
 import androidx.core.app.ActivityCompat;
-
+import androidx.fragment.app.Fragment;
 
 
 public abstract class PermissionUtils {
@@ -16,6 +16,16 @@ public abstract class PermissionUtils {
         if (overrideRationale ||
                 (getPermissionStatus(activity, permission) == PermissionStatus.DONT_ASK_OR_NEVER_ASKED)) {
             ActivityCompat.requestPermissions(activity, new String[]{permission}, requestId);
+        }
+    }
+
+    public static void requestPermission(Fragment fragment, int requestId,
+                                         String permission, boolean overrideRationale) {
+        // only request permission if overrideRationale is true or if never asked permission before
+        // (will also ask if never ask again was selected but request will be denied automatically)
+        if (overrideRationale  ||
+                (getPermissionStatus(fragment.getActivity(), permission) == PermissionStatus.DONT_ASK_OR_NEVER_ASKED)) {
+            fragment.requestPermissions(new String[]{permission}, requestId);
         }
     }
 
