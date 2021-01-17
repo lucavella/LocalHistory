@@ -221,7 +221,7 @@ public class LocationMapsFragment extends Fragment
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (!targetMarker.equals(marker)) {
+        if ((targetMarker != null) && !targetMarker.equals(marker)) {
             targetMarker.remove();
         }
 
