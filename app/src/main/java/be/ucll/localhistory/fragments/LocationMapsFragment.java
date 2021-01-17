@@ -276,7 +276,9 @@ public class LocationMapsFragment extends Fragment
     public void onStop() {
         super.onStop();
 
-        locationManager.removeUpdates(locationUpdatesHandler);
+        if (locationManager != null) {
+            locationManager.removeUpdates(locationUpdatesHandler);
+        }
 
         if (mMap != null) {
             mMap.setMyLocationEnabled(false);
