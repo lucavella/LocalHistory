@@ -274,10 +274,14 @@ public class LocationMapsFragment extends Fragment
         mMap.setMyLocationEnabled(false);
         locationManager.removeUpdates(locationUpdatesHandler);
 
-        mMap.setOnCameraMoveStartedListener(null);
-        mMap.setOnMapLongClickListener(null);
-        mMap.setOnMarkerDragListener(null);
-        mMap.setOnMarkerClickListener(null);
+        if (mMap != null) {
+            mMap.setMyLocationEnabled(false);
+
+            mMap.setOnCameraMoveStartedListener(null);
+            mMap.setOnMapLongClickListener(null);
+            mMap.setOnMarkerDragListener(null);
+            mMap.setOnMarkerClickListener(null);
+        }
     }
 
     @SuppressLint("MissingPermission")
