@@ -150,6 +150,7 @@ public class LocationMapsFragment extends Fragment
                         .orderByChild("geoHash")
                         .startAt(b.startHash)
                         .endAt(b.endHash);
+                query.keepSynced(true);
                 tasks.add(query.get());
             }
 
@@ -315,7 +316,7 @@ public class LocationMapsFragment extends Fragment
 
             String bestProvider = locationManager.getBestProvider(new Criteria(), false);
             if (bestProvider == null) return;
-            locationManager.requestLocationUpdates(2_000, 1, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
+            locationManager.requestLocationUpdates(5_000, 0, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
 
         } else {
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
