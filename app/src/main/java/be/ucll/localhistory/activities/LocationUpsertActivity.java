@@ -119,11 +119,11 @@ public class LocationUpsertActivity extends AppCompatActivity {
                                 locationRef.child(location.getKey()).setValue(location);
                             }
 
-                            Intent showLocationIntent = new Intent()
-                                    .setAction(Intent.ACTION_VIEW)
+                            Intent showLocationInfoIntent = new Intent()
+                                    .setAction(Intent.ACTION_GET_CONTENT)
                                     .putExtra(getString(R.string.location_txt), location);
 
-                            setResult(RESULT_OK, showLocationIntent);
+                            setResult(RESULT_OK, showLocationInfoIntent);
                             finish();
                         } else {
                             Toast.makeText(LocationUpsertActivity.this, R.string.location_upsert_incomplete, Toast.LENGTH_SHORT).show();

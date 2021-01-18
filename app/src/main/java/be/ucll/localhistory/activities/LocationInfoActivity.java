@@ -122,7 +122,7 @@ public class LocationInfoActivity extends AppCompatActivity
     }
 
     private void handleIntent(Intent intent) {
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (Intent.ACTION_GET_CONTENT.equals(intent.getAction())) {
             location = (LocationDb)intent.getSerializableExtra(
                     getString(R.string.location_txt)
             );
@@ -162,7 +162,7 @@ public class LocationInfoActivity extends AppCompatActivity
 
         if (resultCode == RESULT_OK) {
             if (data != null) {
-                if (Intent.ACTION_VIEW.equals(data.getAction())) {
+                if (Intent.ACTION_GET_CONTENT.equals(data.getAction())) {
                     location = (LocationDb) data.getSerializableExtra(
                             getString(R.string.location_txt)
                     );

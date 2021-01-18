@@ -32,6 +32,8 @@
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.GET_CONTENT" />
+                <action android:name="android.intent.action.DELETE" />
             </intent-filter>
 
             <meta-data
@@ -61,7 +63,7 @@
             android:label="@string/title_activity_location_info"
             android:launchMode="singleTop">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.GET_CONTENT" />
             </intent-filter>
         </activity>
         <activity

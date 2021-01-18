@@ -262,7 +262,7 @@ public class LocationMapsFragment extends Fragment
 
             Intent infoIntent = new Intent(getActivity(),
                     LocationInfoActivity.class)
-                    .setAction(Intent.ACTION_VIEW)
+                    .setAction(Intent.ACTION_GET_CONTENT)
                     .putExtra(getString(R.string.location_txt), location);
 
             startActivityForResult(infoIntent, 1);

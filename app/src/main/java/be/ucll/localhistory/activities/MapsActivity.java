@@ -206,6 +206,22 @@ public class MapsActivity extends AppCompatActivity  {
                         locationMapsFragment.showLocation(location);
                     }
                 }
+                else if (Intent.ACTION_GET_CONTENT.equals(data.getAction())) {
+                    LocationDb location = (LocationDb) data.getSerializableExtra(
+                            getString(R.string.location_txt)
+                    );
+
+                    if ((locationMapsFragment != null) && (location != null)) {
+                        Intent infoIntent = new Intent(this,
+                                LocationInfoActivity.class)
+                                .setAction(Intent.ACTION_GET_CONTENT)
+                                .putExtra(getString(R.string.location_txt), location);
+
+                        startActivityForResult(infoIntent, 1);
+
+                        locationMapsFragment.showLocation(location);
+                    }
+                }
                 else if (Intent.ACTION_DELETE.equals(data.getAction())) {
                     if (locationMapsFragment != null) {
                         locationMapsFragment.removeLocation();
