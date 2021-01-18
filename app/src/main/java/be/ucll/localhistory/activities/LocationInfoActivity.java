@@ -43,6 +43,7 @@ public class LocationInfoActivity extends AppCompatActivity
         SwipeRefreshLayout.OnRefreshListener{
 
     private LocationDb location;
+    private boolean locationIsEdited = false;
 
     private LocationManager locationManager;
 
@@ -109,7 +110,15 @@ public class LocationInfoActivity extends AppCompatActivity
                 return true;
 
             default:
-                setResult(RESULT_CANCELED);
+                if (locationIsEdited) {
+                    Intent showEditedLocationIntent = new Intent()
+                            .setAction(Intent.ACTION_VIEW)
+                            .putExtra(getString(R.string.location_txt), location);
+                    setResult(RESULT_OK, showEditedLocationIntent);
+                } else {
+                    setResult(RESULT_CANCELED);
+                }
+
                 finish();
                 return true;
         }
@@ -168,6 +177,8 @@ public class LocationInfoActivity extends AppCompatActivity
                     );
 
                     updateLocationTextInfo();
+
+                    locationIsEdited = true;
                 }
             }
         }
