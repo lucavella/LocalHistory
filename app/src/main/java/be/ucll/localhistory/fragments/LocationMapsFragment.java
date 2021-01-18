@@ -157,32 +157,37 @@ public class LocationMapsFragment extends Fragment
                     .addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
                         @Override
                         public void onComplete(@NonNull Task<List<Task<?>>> t) {
-                            for (Marker marker : nearbyMarkers) {
-                                marker.remove();
-                            }
-                            nearbyMarkers.clear();
+                            boolean isSuccessful = true;
 
                             for (Task<DataSnapshot> task : tasks) {
-                                if (!task.isSuccessful()) {
-                                    break;
+                                isSuccessful &= task.isSuccessful();
+                            }
+
+                            if (isSuccessful) {
+                                for (Marker marker : nearbyMarkers) {
+                                    marker.remove();
                                 }
-                                DataSnapshot snapshot = task.getResult();
-                                if (snapshot != null) {
-                                    for (DataSnapshot ds : snapshot.getChildren()) {
-                                        LocationDb location = ds.getValue(LocationDb.class);
-                                        if (location == null) continue;
-                                        location.setKey(ds.getKey());
+                                nearbyMarkers.clear();
 
-                                        // filter false positives
-                                        GeoLocation geoLocation = new GeoLocation(location.getPosition().getLatitude(),
-                                                location.getPosition().getLongitude());
-                                        double distanceInM = GeoFireUtils.getDistanceBetween(geoLocation, myGeoLocation);
+                                for (Task<DataSnapshot> task : tasks) {
+                                    DataSnapshot snapshot = task.getResult();
+                                    if (snapshot != null) {
+                                        for (DataSnapshot ds : snapshot.getChildren()) {
+                                            LocationDb location = ds.getValue(LocationDb.class);
+                                            if (location == null) continue;
+                                            location.setKey(ds.getKey());
 
-                                        if (distanceInM <= nearbyRadiusMeters) {
-                                            Marker marker = addMarker(location.getPosition().ToLatLng(),
-                                                    "", 215f, location, false);
+                                            // filter false positives
+                                            GeoLocation geoLocation = new GeoLocation(location.getPosition().getLatitude(),
+                                                    location.getPosition().getLongitude());
+                                            double distanceInM = GeoFireUtils.getDistanceBetween(geoLocation, myGeoLocation);
 
-                                            nearbyMarkers.add(marker);
+                                            if (distanceInM <= nearbyRadiusMeters) {
+                                                Marker marker = addMarker(location.getPosition().ToLatLng(),
+                                                        "", 215f, location, false);
+
+                                                nearbyMarkers.add(marker);
+                                            }
                                         }
                                     }
                                 }
@@ -268,8 +273,9 @@ public class LocationMapsFragment extends Fragment
 
             startActivityForResult(infoIntent, 1);
         }
-
-        jumpToLocation(marker.getPosition(), 0f, true);
+        if ((targetMarker != null) && targetMarker.equals(marker)) {
+            jumpToLocation(marker.getPosition(), 0f, true);
+        }
         return false;
     }
 
@@ -309,7 +315,7 @@ public class LocationMapsFragment extends Fragment
 
             String bestProvider = locationManager.getBestProvider(new Criteria(), false);
             if (bestProvider == null) return;
-            locationManager.requestLocationUpdates(200, 10, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
+            locationManager.requestLocationUpdates(2_000, 1, new Criteria(), locationUpdatesHandler, Looper.getMainLooper());
 
         } else {
             PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE,
