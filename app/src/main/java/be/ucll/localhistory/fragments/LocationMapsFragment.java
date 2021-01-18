@@ -245,7 +245,8 @@ public class LocationMapsFragment extends Fragment
 
                         startActivityForResult(addIntent, 1);
 
-                        return true;
+                        jumpToLocation(marker.getPosition(), 0f, true);
+                        return false;
                     }
                 }
             }
@@ -268,7 +269,8 @@ public class LocationMapsFragment extends Fragment
             startActivityForResult(infoIntent, 1);
         }
 
-        return true;
+        jumpToLocation(marker.getPosition(), 0f, true);
+        return false;
     }
 
     @SuppressLint("MissingPermission")
